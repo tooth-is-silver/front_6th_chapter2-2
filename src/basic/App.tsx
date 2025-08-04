@@ -18,6 +18,10 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { HeaderLayout } from "./components/layout/HeaderLayout";
 import { NotificationToast } from "./components/common/NotificationToast";
 import { formatPrice } from "./utils/format";
+import { useAddToCart } from "./hooks/cart/useAddToCart";
+import { useRemoveFromCart } from "./hooks/cart/useRemoveFormCart";
+import { useUpdateQuantity } from "./hooks/cart/useUpdateQuantity";
+import { useApplyCoupon } from "./hooks/cart/useApplyCoupon";
 
 const App = () => {
   const [products, setProducts] = useState<ProductWithUI[]>(() => {
@@ -191,94 +195,26 @@ const App = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  const addToCart = useCallback(
-    (product: ProductWithUI) => {
-      const remainingStock = getRemainingStock(product);
-      if (remainingStock <= 0) {
-        addNotification("재고가 부족합니다!", "error");
-        return;
-      }
-
-      setCart((prevCart) => {
-        const existingItem = prevCart.find(
-          (item) => item.product.id === product.id
-        );
-
-        if (existingItem) {
-          const newQuantity = existingItem.quantity + 1;
-
-          if (newQuantity > product.stock) {
-            addNotification(
-              `재고는 ${product.stock}개까지만 있습니다.`,
-              "error"
-            );
-            return prevCart;
-          }
-
-          return prevCart.map((item) =>
-            item.product.id === product.id
-              ? { ...item, quantity: newQuantity }
-              : item
-          );
-        }
-
-        return [...prevCart, { product, quantity: 1 }];
-      });
-
-      addNotification("장바구니에 담았습니다", "success");
-    },
-    [cart, addNotification, getRemainingStock]
+  const { addToCart } = useAddToCart(
+    getRemainingStock,
+    addNotification,
+    cart,
+    setCart
   );
 
-  const removeFromCart = useCallback((productId: string) => {
-    setCart((prevCart) =>
-      prevCart.filter((item) => item.product.id !== productId)
-    );
-  }, []);
-
-  const updateQuantity = useCallback(
-    (productId: string, newQuantity: number) => {
-      if (newQuantity <= 0) {
-        removeFromCart(productId);
-        return;
-      }
-
-      const product = products.find((p) => p.id === productId);
-      if (!product) return;
-
-      const maxStock = product.stock;
-      if (newQuantity > maxStock) {
-        addNotification(`재고는 ${maxStock}개까지만 있습니다.`, "error");
-        return;
-      }
-
-      setCart((prevCart) =>
-        prevCart.map((item) =>
-          item.product.id === productId
-            ? { ...item, quantity: newQuantity }
-            : item
-        )
-      );
-    },
-    [products, removeFromCart, addNotification, getRemainingStock]
+  const { removeFromCart } = useRemoveFromCart(setCart);
+  const { updateQuantity } = useUpdateQuantity(
+    removeFromCart,
+    products,
+    addNotification,
+    setCart,
+    getRemainingStock
   );
 
-  const applyCoupon = useCallback(
-    (coupon: Coupon) => {
-      const currentTotal = calculateCartTotal().totalAfterDiscount;
-
-      if (currentTotal < 10000 && coupon.discountType === "percentage") {
-        addNotification(
-          "percentage 쿠폰은 10,000원 이상 구매 시 사용 가능합니다.",
-          "error"
-        );
-        return;
-      }
-
-      setSelectedCoupon(coupon);
-      addNotification("쿠폰이 적용되었습니다.", "success");
-    },
-    [addNotification, calculateCartTotal]
+  const { applyCoupon } = useApplyCoupon(
+    calculateCartTotal,
+    addNotification,
+    setSelectedCoupon
   );
 
   const completeOrder = useCallback(() => {
