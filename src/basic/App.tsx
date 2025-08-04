@@ -1,5 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
-import { CartItem, Coupon, Product, ProductWithUI } from "../types";
+import {
+  CartItem,
+  Coupon,
+  Notification,
+  Product,
+  ProductWithUI,
+} from "../types";
 import { initialProducts, initialCoupons } from "./constants";
 import {
   ImageIcon,
@@ -9,13 +15,8 @@ import {
   AddIcon,
 } from "./components/icons";
 import { AppLayout } from "./components/layout/AppLayout";
-import { Header } from "./components/layout/header/Header";
-
-interface Notification {
-  id: string;
-  message: string;
-  type: "error" | "success" | "warning";
-}
+import { HeaderLayout } from "./components/layout/HeaderLayout";
+import { NotificationToast } from "./components/common/NotificationToast";
 
 const App = () => {
   const [products, setProducts] = useState<ProductWithUI[]>(() => {
@@ -423,35 +424,11 @@ const App = () => {
 
   return (
     <AppLayout>
-      {notifications.length > 0 && (
-        <div className="fixed top-20 right-4 z-50 space-y-2 max-w-sm">
-          {notifications.map((notif) => (
-            <div
-              key={notif.id}
-              className={`p-4 rounded-md shadow-md text-white flex justify-between items-center ${
-                notif.type === "error"
-                  ? "bg-red-600"
-                  : notif.type === "warning"
-                  ? "bg-yellow-600"
-                  : "bg-green-600"
-              }`}
-            >
-              <span className="mr-2">{notif.message}</span>
-              <button
-                onClick={() =>
-                  setNotifications((prev) =>
-                    prev.filter((n) => n.id !== notif.id)
-                  )
-                }
-                className="text-white hover:text-gray-200"
-              >
-                <CloseIcon />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-      <Header
+      <NotificationToast
+        notifications={notifications}
+        setNotifications={setNotifications}
+      />
+      <HeaderLayout
         isAdmin={isAdmin}
         setIsAdmin={setIsAdmin}
         searchTerm={searchTerm}

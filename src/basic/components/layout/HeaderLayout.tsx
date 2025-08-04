@@ -1,9 +1,8 @@
 import { SetStateAction } from "jotai";
 import { Dispatch } from "react";
-import { GnbCartIcon } from "../../icons";
-import { CartItem } from "../../../../types";
-
-type HeaderProps = {
+import { CartItem } from "../../../types";
+import { GnbCartIcon } from "../icons";
+type HeaderLayoutProps = {
   isAdmin: boolean;
   setIsAdmin: Dispatch<SetStateAction<boolean>>;
   searchTerm: string;
@@ -12,14 +11,14 @@ type HeaderProps = {
   totalItemCount: number;
 };
 
-export const Header = ({
+export const HeaderLayout = ({
   isAdmin,
   setIsAdmin,
   searchTerm,
   setSearchTerm,
   cart,
   totalItemCount,
-}: HeaderProps) => {
+}: HeaderLayoutProps) => {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40 border-b">
       <div className="max-w-7xl mx-auto px-4">
