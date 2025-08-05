@@ -28,6 +28,9 @@ import { useDeleteProduct } from "./hooks/product/useDeleteProduct";
 import { useCompleteOrder } from "./hooks/order/useCompleteOrder";
 import { useAddCoupon } from "./hooks/coupon/useAddCoupon";
 import { useDeleteCoupon } from "./hooks/coupon/useDeleteCoupon";
+import { productHandler } from "./handlers/product";
+import { couponHandler } from "./handlers/coupon";
+import { cartHandler } from "./handlers/cart";
 
 const App = () => {
   const [products, setProducts] = useState<ProductWithUI[]>(() => {
@@ -94,70 +97,10 @@ const App = () => {
     discountValue: 0,
   });
 
-  const getMaxApplicableDiscount = (item: CartItem): number => {
-    const { discounts } = item.product;
-    const { quantity } = item;
-
-    const baseDiscount = discounts.reduce((maxDiscount, discount) => {
-      return quantity >= discount.quantity && discount.rate > maxDiscount
-        ? discount.rate
-        : maxDiscount;
-    }, 0);
-
-    const hasBulkPurchase = cart.some((cartItem) => cartItem.quantity >= 10);
-    if (hasBulkPurchase) {
-      return Math.min(baseDiscount + 0.05, 0.5); // 대량 구매 시 추가 5% 할인
-    }
-
-    return baseDiscount;
-  };
-
-  const calculateItemTotal = (item: CartItem): number => {
-    const { price } = item.product;
-    const { quantity } = item;
-    const discount = getMaxApplicableDiscount(item);
-
-    return Math.round(price * quantity * (1 - discount));
-  };
-
-  const calculateCartTotal = (): {
-    totalBeforeDiscount: number;
-    totalAfterDiscount: number;
-  } => {
-    let totalBeforeDiscount = 0;
-    let totalAfterDiscount = 0;
-
-    cart.forEach((item) => {
-      const itemPrice = item.product.price * item.quantity;
-      totalBeforeDiscount += itemPrice;
-      totalAfterDiscount += calculateItemTotal(item);
-    });
-
-    if (selectedCoupon) {
-      if (selectedCoupon.discountType === "amount") {
-        totalAfterDiscount = Math.max(
-          0,
-          totalAfterDiscount - selectedCoupon.discountValue
-        );
-      } else {
-        totalAfterDiscount = Math.round(
-          totalAfterDiscount * (1 - selectedCoupon.discountValue / 100)
-        );
-      }
-    }
-
-    return {
-      totalBeforeDiscount: Math.round(totalBeforeDiscount),
-      totalAfterDiscount: Math.round(totalAfterDiscount),
-    };
-  };
-
-  const getRemainingStock = (product: Product): number => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    const remaining = product.stock - (cartItem?.quantity || 0);
-
-    return remaining;
-  };
+  const { calculateItemTotal, calculateCartTotal } = cartHandler(
+    cart,
+    selectedCoupon
+  );
 
   const addNotification = useCallback(
     (message: string, type: "error" | "success" | "warning" = "success") => {
@@ -201,6 +144,29 @@ const App = () => {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
+  const { addProduct } = useAddProduct(setProducts, addNotification);
+  const { updateProduct } = useUpdateProduct(setProducts, addNotification);
+  const { deleteProduct } = useDeleteProduct(setProducts, addNotification);
+  const { addCoupon } = useAddCoupon(coupons, setCoupons, addNotification);
+  const { deleteCoupon } = useDeleteCoupon(
+    selectedCoupon,
+    setSelectedCoupon,
+    setCoupons,
+    addNotification
+  );
+
+  const { handleProductSubmit, startEditProduct, getRemainingStock } =
+    productHandler(
+      editingProduct,
+      setEditingProduct,
+      updateProduct,
+      addProduct,
+      productForm,
+      setProductForm,
+      setShowProductForm,
+      cart
+    );
+
   const { addToCart } = useAddToCart(
     getRemainingStock,
     addNotification,
@@ -229,62 +195,12 @@ const App = () => {
     addNotification
   );
 
-  const { addProduct } = useAddProduct(setProducts, addNotification);
-  const { updateProduct } = useUpdateProduct(setProducts, addNotification);
-  const { deleteProduct } = useDeleteProduct(setProducts, addNotification);
-  const { addCoupon } = useAddCoupon(coupons, setCoupons, addNotification);
-  const { deleteCoupon } = useDeleteCoupon(
-    selectedCoupon,
-    setSelectedCoupon,
-    setCoupons,
-    addNotification
+  const { handleCouponSubmit } = couponHandler(
+    addCoupon,
+    couponForm,
+    setCouponForm,
+    setShowCouponForm
   );
-
-  const handleProductSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingProduct && editingProduct !== "new") {
-      updateProduct(editingProduct, productForm);
-      setEditingProduct(null);
-    } else {
-      addProduct({
-        ...productForm,
-        discounts: productForm.discounts,
-      });
-    }
-    setProductForm({
-      name: "",
-      price: 0,
-      stock: 0,
-      description: "",
-      discounts: [],
-    });
-    setEditingProduct(null);
-    setShowProductForm(false);
-  };
-
-  const handleCouponSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    addCoupon(couponForm);
-    setCouponForm({
-      name: "",
-      code: "",
-      discountType: "amount",
-      discountValue: 0,
-    });
-    setShowCouponForm(false);
-  };
-
-  const startEditProduct = (product: ProductWithUI) => {
-    setEditingProduct(product.id);
-    setProductForm({
-      name: product.name,
-      price: product.price,
-      stock: product.stock,
-      description: product.description || "",
-      discounts: product.discounts || [],
-    });
-    setShowProductForm(true);
-  };
 
   const totals = calculateCartTotal();
 
