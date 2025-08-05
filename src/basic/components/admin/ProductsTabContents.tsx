@@ -3,6 +3,7 @@ import { CartItem, ProductForm, ProductWithUI } from "../../../types";
 import { formatPrice } from "../../utils/format";
 import { getRemainingStock } from "../../utils/stock";
 import { CloseIcon } from "../icons";
+import Input from "../common/Input";
 
 interface ProductsTabContentsProps {
   cart: Array<CartItem>;
@@ -138,105 +139,86 @@ const ProductsTabContents = ({
               {editingProduct === "new" ? "새 상품 추가" : "상품 수정"}
             </h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  상품명
-                </label>
-                <input
-                  type="text"
-                  value={productForm.name}
-                  onChange={(e) =>
+              <Input
+                labelText="상품명"
+                type="text"
+                value={productForm.name}
+                onChange={(e) =>
+                  setProductForm({
+                    ...productForm,
+                    name: e.target.value,
+                  })
+                }
+                required
+              />
+              <Input
+                labelText="설명"
+                type="text"
+                value={productForm.description}
+                onChange={(e) =>
+                  setProductForm({
+                    ...productForm,
+                    description: e.target.value,
+                  })
+                }
+              />
+
+              <Input
+                labelText="가격"
+                type="text"
+                value={productForm.price === 0 ? "" : productForm.price}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || /^\d+$/.test(value)) {
                     setProductForm({
                       ...productForm,
-                      name: e.target.value,
-                    })
+                      price: value === "" ? 0 : parseInt(value),
+                    });
                   }
-                  className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  설명
-                </label>
-                <input
-                  type="text"
-                  value={productForm.description}
-                  onChange={(e) =>
+                }}
+                onBlur={(e) => {
+                  const value = e.target.value;
+                  if (value === "") {
+                    setProductForm({ ...productForm, price: 0 });
+                  } else if (parseInt(value) < 0) {
+                    addNotification("가격은 0보다 커야 합니다", "error");
+                    setProductForm({ ...productForm, price: 0 });
+                  }
+                }}
+                placeholder="숫자만 입력"
+                required
+              />
+              <Input
+                labelText="재고"
+                type="text"
+                value={productForm.stock === 0 ? "" : productForm.stock}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "" || /^\d+$/.test(value)) {
                     setProductForm({
                       ...productForm,
-                      description: e.target.value,
-                    })
+                      stock: value === "" ? 0 : parseInt(value),
+                    });
                   }
-                  className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  가격
-                </label>
-                <input
-                  type="text"
-                  value={productForm.price === 0 ? "" : productForm.price}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === "" || /^\d+$/.test(value)) {
-                      setProductForm({
-                        ...productForm,
-                        price: value === "" ? 0 : parseInt(value),
-                      });
-                    }
-                  }}
-                  onBlur={(e) => {
-                    const value = e.target.value;
-                    if (value === "") {
-                      setProductForm({ ...productForm, price: 0 });
-                    } else if (parseInt(value) < 0) {
-                      addNotification("가격은 0보다 커야 합니다", "error");
-                      setProductForm({ ...productForm, price: 0 });
-                    }
-                  }}
-                  className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
-                  placeholder="숫자만 입력"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  재고
-                </label>
-                <input
-                  type="text"
-                  value={productForm.stock === 0 ? "" : productForm.stock}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === "" || /^\d+$/.test(value)) {
-                      setProductForm({
-                        ...productForm,
-                        stock: value === "" ? 0 : parseInt(value),
-                      });
-                    }
-                  }}
-                  onBlur={(e) => {
-                    const value = e.target.value;
-                    if (value === "") {
-                      setProductForm({ ...productForm, stock: 0 });
-                    } else if (parseInt(value) < 0) {
-                      addNotification("재고는 0보다 커야 합니다", "error");
-                      setProductForm({ ...productForm, stock: 0 });
-                    } else if (parseInt(value) > 9999) {
-                      addNotification(
-                        "재고는 9999개를 초과할 수 없습니다",
-                        "error"
-                      );
-                      setProductForm({ ...productForm, stock: 9999 });
-                    }
-                  }}
-                  className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border"
-                  placeholder="숫자만 입력"
-                  required
-                />
-              </div>
+                }}
+                onBlur={(e) => {
+                  const value = e.target.value;
+                  if (value === "") {
+                    setProductForm({ ...productForm, stock: 0 });
+                  } else if (parseInt(value) < 0) {
+                    addNotification("재고는 0보다 커야 합니다", "error");
+                    setProductForm({ ...productForm, stock: 0 });
+                  } else if (parseInt(value) > 9999) {
+                    addNotification(
+                      "재고는 9999개를 초과할 수 없습니다",
+                      "error"
+                    );
+                    setProductForm({ ...productForm, stock: 9999 });
+                  }
+                }}
+                placeholder="숫자만 입력"
+                required
+              />
             </div>
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">

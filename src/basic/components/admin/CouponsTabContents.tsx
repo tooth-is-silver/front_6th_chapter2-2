@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import { Coupon, CouponForm } from "../../../types";
 import { AddIcon, DeleteIcon } from "../icons";
+import Input from "../common/Input";
 
 interface CouponsTabContentsProps {
   coupons: Array<Coupon>;
@@ -80,42 +81,32 @@ const CouponsTabContents = ({
                 새 쿠폰 생성
               </h3>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    쿠폰명
-                  </label>
-                  <input
-                    type="text"
-                    value={couponForm.name}
-                    onChange={(e) =>
-                      setCouponForm({
-                        ...couponForm,
-                        name: e.target.value,
-                      })
-                    }
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border text-sm"
-                    placeholder="신규 가입 쿠폰"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    쿠폰 코드
-                  </label>
-                  <input
-                    type="text"
-                    value={couponForm.code}
-                    onChange={(e) =>
-                      setCouponForm({
-                        ...couponForm,
-                        code: e.target.value.toUpperCase(),
-                      })
-                    }
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border text-sm font-mono"
-                    placeholder="WELCOME2024"
-                    required
-                  />
-                </div>
+                <Input
+                  labelText={"쿠폰명"}
+                  type={"text"}
+                  value={couponForm.name}
+                  onChange={(e) =>
+                    setCouponForm({
+                      ...couponForm,
+                      name: e.target.value,
+                    })
+                  }
+                  placeholder={"신규 가입 쿠폰"}
+                  required
+                />
+                <Input
+                  labelText={"쿠폰 코드"}
+                  type={"text"}
+                  value={couponForm.code}
+                  onChange={(e) =>
+                    setCouponForm({
+                      ...couponForm,
+                      code: e.target.value.toUpperCase(),
+                    })
+                  }
+                  placeholder={"WELCOME2024"}
+                  required
+                />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     할인 타입
@@ -134,71 +125,68 @@ const CouponsTabContents = ({
                     <option value="percentage">정률 할인</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {couponForm.discountType === "amount"
+                <Input
+                  labelText={
+                    couponForm.discountType === "amount"
                       ? "할인 금액"
-                      : "할인율(%)"}
-                  </label>
-                  <input
-                    type="text"
-                    value={
-                      couponForm.discountValue === 0
-                        ? ""
-                        : couponForm.discountValue
+                      : "할인율(%)"
+                  }
+                  type={"text"}
+                  value={
+                    couponForm.discountValue === 0
+                      ? ""
+                      : couponForm.discountValue
+                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === "" || /^\d+$/.test(value)) {
+                      setCouponForm({
+                        ...couponForm,
+                        discountValue: value === "" ? 0 : parseInt(value),
+                      });
                     }
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (value === "" || /^\d+$/.test(value)) {
+                  }}
+                  onBlur={(e) => {
+                    const value = parseInt(e.target.value) || 0;
+                    if (couponForm.discountType === "percentage") {
+                      if (value > 100) {
+                        addNotification(
+                          "할인율은 100%를 초과할 수 없습니다",
+                          "error"
+                        );
                         setCouponForm({
                           ...couponForm,
-                          discountValue: value === "" ? 0 : parseInt(value),
+                          discountValue: 100,
+                        });
+                      } else if (value < 0) {
+                        setCouponForm({
+                          ...couponForm,
+                          discountValue: 0,
                         });
                       }
-                    }}
-                    onBlur={(e) => {
-                      const value = parseInt(e.target.value) || 0;
-                      if (couponForm.discountType === "percentage") {
-                        if (value > 100) {
-                          addNotification(
-                            "할인율은 100%를 초과할 수 없습니다",
-                            "error"
-                          );
-                          setCouponForm({
-                            ...couponForm,
-                            discountValue: 100,
-                          });
-                        } else if (value < 0) {
-                          setCouponForm({
-                            ...couponForm,
-                            discountValue: 0,
-                          });
-                        }
-                      } else {
-                        if (value > 100000) {
-                          addNotification(
-                            "할인 금액은 100,000원을 초과할 수 없습니다",
-                            "error"
-                          );
-                          setCouponForm({
-                            ...couponForm,
-                            discountValue: 100000,
-                          });
-                        } else if (value < 0) {
-                          setCouponForm({
-                            ...couponForm,
-                            discountValue: 0,
-                          });
-                        }
+                    } else {
+                      if (value > 100000) {
+                        addNotification(
+                          "할인 금액은 100,000원을 초과할 수 없습니다",
+                          "error"
+                        );
+                        setCouponForm({
+                          ...couponForm,
+                          discountValue: 100000,
+                        });
+                      } else if (value < 0) {
+                        setCouponForm({
+                          ...couponForm,
+                          discountValue: 0,
+                        });
                       }
-                    }}
-                    className="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-3 py-2 border text-sm"
-                    placeholder={
-                      couponForm.discountType === "amount" ? "5000" : "10"
                     }
-                    required
-                  />
-                </div>
+                  }}
+                  placeholder={
+                    couponForm.discountType === "amount" ? "5000" : "10"
+                  }
+                  required
+                />
               </div>
               <div className="flex justify-end gap-3">
                 <button
