@@ -8,8 +8,7 @@ import {
   DeleteIcon,
   AddIcon,
 } from "./components/icons";
-import { AppLayout } from "./components/layout/AppLayout";
-import { HeaderLayout } from "./components/layout/HeaderLayout";
+import { Header } from "./components/common/Header";
 import { NotificationToast } from "./components/common/NotificationToast";
 import { formatPrice } from "./utils/format";
 import { useAddToCart } from "./hooks/cart/useAddToCart";
@@ -203,12 +202,12 @@ const App = () => {
     : products;
 
   return (
-    <AppLayout>
+    <div className="min-h-screen bg-gray-50">
       <NotificationToast
         notifications={notifications}
         setNotifications={setNotifications}
       />
-      <HeaderLayout
+      <Header
         isAdmin={isAdmin}
         setIsAdmin={setIsAdmin}
         searchTerm={searchTerm}
@@ -1073,7 +1072,7 @@ const App = () => {
           </div>
         )}
       </main>
-    </AppLayout>
+    </div>
   );
 };
 
