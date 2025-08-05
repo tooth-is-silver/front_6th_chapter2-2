@@ -22,6 +22,10 @@ import { useAddToCart } from "./hooks/cart/useAddToCart";
 import { useRemoveFromCart } from "./hooks/cart/useRemoveFormCart";
 import { useUpdateQuantity } from "./hooks/cart/useUpdateQuantity";
 import { useApplyCoupon } from "./hooks/cart/useApplyCoupon";
+import { useAddProduct } from "./hooks/product/useAddProduct";
+import { useUpdateProduct } from "./hooks/product/useUpdateProduct";
+import { useDeleteProduct } from "./hooks/product/useDeleteProduct";
+import { useCompleteOrder } from "./hooks/order/useCompleteOrder";
 
 const App = () => {
   const [products, setProducts] = useState<ProductWithUI[]>(() => {
@@ -217,47 +221,15 @@ const App = () => {
     setSelectedCoupon
   );
 
-  const completeOrder = useCallback(() => {
-    const orderNumber = `ORD-${Date.now()}`;
-    addNotification(
-      `주문이 완료되었습니다. 주문번호: ${orderNumber}`,
-      "success"
-    );
-    setCart([]);
-    setSelectedCoupon(null);
-  }, [addNotification]);
-
-  const addProduct = useCallback(
-    (newProduct: Omit<ProductWithUI, "id">) => {
-      const product: ProductWithUI = {
-        ...newProduct,
-        id: `p${Date.now()}`,
-      };
-      setProducts((prev) => [...prev, product]);
-      addNotification("상품이 추가되었습니다.", "success");
-    },
-    [addNotification]
+  const { completeOrder } = useCompleteOrder(
+    setCart,
+    setSelectedCoupon,
+    addNotification
   );
 
-  const updateProduct = useCallback(
-    (productId: string, updates: Partial<ProductWithUI>) => {
-      setProducts((prev) =>
-        prev.map((product) =>
-          product.id === productId ? { ...product, ...updates } : product
-        )
-      );
-      addNotification("상품이 수정되었습니다.", "success");
-    },
-    [addNotification]
-  );
-
-  const deleteProduct = useCallback(
-    (productId: string) => {
-      setProducts((prev) => prev.filter((p) => p.id !== productId));
-      addNotification("상품이 삭제되었습니다.", "success");
-    },
-    [addNotification]
-  );
+  const { addProduct } = useAddProduct(setProducts, addNotification);
+  const { updateProduct } = useUpdateProduct(setProducts, addNotification);
+  const { deleteProduct } = useDeleteProduct(setProducts, addNotification);
 
   const addCoupon = useCallback(
     (newCoupon: Coupon) => {
