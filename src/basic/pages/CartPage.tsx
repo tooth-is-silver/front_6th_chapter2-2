@@ -1,25 +1,31 @@
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { ProductWithUI, Coupon, CartItem } from "../../../types";
-import { initialProducts, initialCoupons } from "../../constants";
-import { cartHandler } from "../../handlers/cart";
-import { couponHandler } from "../../handlers/coupon";
-import { productHandler } from "../../handlers/product";
-import { useAddToCart } from "../../hooks/cart/useAddToCart";
-import { useApplyCoupon } from "../../hooks/cart/useApplyCoupon";
-import { useRemoveFromCart } from "../../hooks/cart/useRemoveFormCart";
-import { useUpdateQuantity } from "../../hooks/cart/useUpdateQuantity";
-import { useAddCoupon } from "../../hooks/coupon/useAddCoupon";
-import { useDeleteCoupon } from "../../hooks/coupon/useDeleteCoupon";
-import { useAddNotification } from "../../hooks/notification/useAddNotification";
-import { useCompleteOrder } from "../../hooks/order/useCompleteOrder";
-import { useAddProduct } from "../../hooks/product/useAddProduct";
-import { useDeleteProduct } from "../../hooks/product/useDeleteProduct";
-import { useUpdateProduct } from "../../hooks/product/useUpdateProduct";
-import { formatPrice } from "../../utils/format";
-import { Notification } from "../../../types";
-import { CloseIcon, DeleteIcon, AddIcon, ImageIcon, CartIcon } from "../icons";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { CartItem, ProductWithUI, Coupon } from "../../types";
+import {
+  CloseIcon,
+  DeleteIcon,
+  AddIcon,
+  ImageIcon,
+  CartIcon,
+} from "../components/icons";
+import { initialProducts, initialCoupons } from "../constants";
+import { cartHandler } from "../handlers/cart";
+import { couponHandler } from "../handlers/coupon";
+import { productHandler } from "../handlers/product";
+import { useAddToCart } from "../hooks/cart/useAddToCart";
+import { useApplyCoupon } from "../hooks/cart/useApplyCoupon";
+import { useRemoveFromCart } from "../hooks/cart/useRemoveFormCart";
+import { useUpdateQuantity } from "../hooks/cart/useUpdateQuantity";
+import { useAddCoupon } from "../hooks/coupon/useAddCoupon";
+import { useDeleteCoupon } from "../hooks/coupon/useDeleteCoupon";
+import { useAddNotification } from "../hooks/notification/useAddNotification";
+import { useCompleteOrder } from "../hooks/order/useCompleteOrder";
+import { useAddProduct } from "../hooks/product/useAddProduct";
+import { useDeleteProduct } from "../hooks/product/useDeleteProduct";
+import { useUpdateProduct } from "../hooks/product/useUpdateProduct";
+import { formatPrice } from "../utils/format";
+import { Notification } from "../../types";
 
-interface CartProps {
+interface CartPageProps {
   cart: Array<CartItem>;
   isAdmin: boolean;
   setCart: Dispatch<SetStateAction<Array<CartItem>>>;
@@ -28,14 +34,14 @@ interface CartProps {
   setNotifications: Dispatch<SetStateAction<Array<Notification>>>;
 }
 
-const Cart = ({
+const CartPage = ({
   cart,
   setCart,
   isAdmin,
   searchTerm,
   setTotalItemCount,
   setNotifications,
-}: CartProps) => {
+}: CartPageProps) => {
   const [products, setProducts] = useState<ProductWithUI[]>(() => {
     const saved = localStorage.getItem("products");
     if (saved) {
@@ -194,20 +200,6 @@ const Cart = ({
     : products;
 
   return (
-    // <div className="min-h-screen bg-gray-50">
-    //   <NotificationToast
-    //     notifications={notifications}
-    //     setNotifications={setNotifications}
-    //   />
-    //   <Header
-    //     isAdmin={isAdmin}
-    //     setIsAdmin={setIsAdmin}
-    //     searchTerm={searchTerm}
-    //     setSearchTerm={setSearchTerm}
-    //     cart={cart}
-    //     totalItemCount={totalItemCount}
-    //   />
-
     <main className="max-w-7xl mx-auto px-4 py-8">
       {isAdmin ? (
         <div className="max-w-6xl mx-auto">
@@ -1060,4 +1052,4 @@ const Cart = ({
   );
 };
 
-export default Cart;
+export default CartPage;

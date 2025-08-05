@@ -1,9 +1,10 @@
 import { useState } from "react";
-import Cart from "./components/cart/Cart";
 import { CartItem } from "../types";
 import { Header } from "./components/common/Header";
 import { Notification } from "../types";
 import { NotificationToast } from "./components/common/NotificationToast";
+import CartPage from "./pages/CartPage";
+import AdminPage from "./pages/AdminPage";
 
 export default function App() {
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -36,15 +37,18 @@ export default function App() {
         cart={cart}
         totalItemCount={totalItemCount}
       />
-      {/* TODO : admin / cart 두 컴포넌트로 분리 */}
-      <Cart
-        cart={cart}
-        isAdmin={isAdmin}
-        setCart={setCart}
-        searchTerm={searchTerm}
-        setTotalItemCount={setTotalItemCount}
-        setNotifications={setNotifications}
-      />
+      {isAdmin ? (
+        <AdminPage />
+      ) : (
+        <CartPage
+          cart={cart}
+          isAdmin={isAdmin}
+          setCart={setCart}
+          searchTerm={searchTerm}
+          setTotalItemCount={setTotalItemCount}
+          setNotifications={setNotifications}
+        />
+      )}
     </div>
   );
 }
