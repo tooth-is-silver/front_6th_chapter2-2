@@ -6,6 +6,17 @@ export interface Product {
   discounts: Discount[];
 }
 
+export interface ProductForm {
+  name: string;
+  price: number;
+  stock: number;
+  description: string;
+  discounts: Array<{
+    quantity: number;
+    rate: number;
+  }>;
+}
+
 export interface Discount {
   quantity: number;
   rate: number;
@@ -22,6 +33,8 @@ export interface Coupon {
   discountType: "amount" | "percentage";
   discountValue: number;
 }
+
+export interface CouponForm extends Coupon {}
 
 export interface ProductWithUI extends Product {
   description?: string;
