@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useCallback } from "react";
 import { CartItem, Product, ProductWithUI } from "../../../types";
 
 export const useAddToCart = (
-  getRemainingStock: (product: Product) => number,
+  getRemainingStock: (cart: Array<CartItem>, product: Product) => number,
   addNotification: (
     message: string,
     type?: "error" | "success" | "warning"
@@ -12,7 +12,7 @@ export const useAddToCart = (
 ) => {
   const addToCart = useCallback(
     (product: ProductWithUI) => {
-      const remainingStock = getRemainingStock(product);
+      const remainingStock = getRemainingStock(cart, product);
       if (remainingStock <= 0) {
         addNotification("재고가 부족합니다!", "error");
         return;

@@ -1,15 +1,15 @@
-import { Product, ProductWithUI } from "../../types";
+import { ProductWithUI } from "../../types";
 
 export const formatPrice = (
   products: Array<ProductWithUI>,
   isAdmin: boolean,
   price: number,
-  getRemainingStock: (product: Product) => number,
+  remainStock: number,
   productId?: string
 ): string => {
   if (productId) {
     const product = products.find((p) => p.id === productId);
-    if (product && getRemainingStock(product) <= 0) {
+    if (product && remainStock <= 0) {
       return "SOLD OUT";
     }
   }

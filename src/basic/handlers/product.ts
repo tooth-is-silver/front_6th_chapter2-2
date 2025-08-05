@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { CartItem, Product, ProductForm, ProductWithUI } from "../../types";
+import { ProductForm, ProductWithUI } from "../../types";
 
 export const productHandler = (
   editingProduct: string | null,
@@ -8,8 +8,7 @@ export const productHandler = (
   addProduct: (newProduct: Omit<ProductWithUI, "id">) => void,
   productForm: ProductForm,
   setProductForm: Dispatch<SetStateAction<ProductForm>>,
-  setShowProductForm: Dispatch<SetStateAction<boolean>>,
-  cart: Array<CartItem>
+  setShowProductForm: Dispatch<SetStateAction<boolean>>
 ) => {
   const handleProductSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,12 +44,5 @@ export const productHandler = (
     setShowProductForm(true);
   };
 
-  const getRemainingStock = (product: Product): number => {
-    const cartItem = cart.find((item) => item.product.id === product.id);
-    const remaining = product.stock - (cartItem?.quantity || 0);
-
-    return remaining;
-  };
-
-  return { handleProductSubmit, startEditProduct, getRemainingStock };
+  return { handleProductSubmit, startEditProduct };
 };

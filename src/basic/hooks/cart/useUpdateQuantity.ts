@@ -9,7 +9,7 @@ export const useUpdateQuantity = (
     type?: "error" | "success" | "warning"
   ) => void,
   setCart: Dispatch<SetStateAction<Array<CartItem>>>,
-  getRemainingStock: (product: Product) => number
+  getRemainingStock: (cart: Array<CartItem>, product: Product) => number
 ) => {
   const updateQuantity = useCallback(
     (productId: string, newQuantity: number) => {
