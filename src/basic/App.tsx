@@ -1,11 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
-import {
-  CartItem,
-  Coupon,
-  Notification,
-  Product,
-  ProductWithUI,
-} from "../types";
+import { useState, useEffect } from "react";
+import { CartItem, Coupon, Notification, ProductWithUI } from "../types";
 import { initialProducts, initialCoupons } from "./constants";
 import {
   ImageIcon,
@@ -31,6 +25,7 @@ import { useDeleteCoupon } from "./hooks/coupon/useDeleteCoupon";
 import { productHandler } from "./handlers/product";
 import { couponHandler } from "./handlers/coupon";
 import { cartHandler } from "./handlers/cart";
+import { useAddNotification } from "./hooks/notification/useAddNotification";
 
 const App = () => {
   const [products, setProducts] = useState<ProductWithUI[]>(() => {
@@ -102,17 +97,7 @@ const App = () => {
     selectedCoupon
   );
 
-  const addNotification = useCallback(
-    (message: string, type: "error" | "success" | "warning" = "success") => {
-      const id = Date.now().toString();
-      setNotifications((prev) => [...prev, { id, message, type }]);
-
-      setTimeout(() => {
-        setNotifications((prev) => prev.filter((n) => n.id !== id));
-      }, 3000);
-    },
-    []
-  );
+  const { addNotification } = useAddNotification(setNotifications);
 
   const [totalItemCount, setTotalItemCount] = useState(0);
 
