@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { CartItem, ProductWithUI, Coupon } from "../../types";
 import { CloseIcon, ImageIcon, CartIcon } from "../components/icons";
 import { cartHandler } from "../handlers/cart";
@@ -17,8 +17,8 @@ interface CartPageProps {
   coupons: Array<Coupon>;
   selectedCoupon: Coupon | null;
   setSelectedCoupon: Dispatch<SetStateAction<Coupon | null>>;
-  searchTerm: string;
-  setTotalItemCount: Dispatch<SetStateAction<number>>;
+  filteredProducts: Array<ProductWithUI>;
+  debouncedSearchTerm: string;
   addNotification: (
     message: string,
     type?: "error" | "success" | "warning"
@@ -32,43 +32,14 @@ const CartPage = ({
   coupons,
   selectedCoupon,
   setSelectedCoupon,
-  searchTerm,
-  setTotalItemCount,
+  filteredProducts,
+  debouncedSearchTerm,
   addNotification,
 }: CartPageProps) => {
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const { calculateItemTotal, calculateCartTotal } = cartHandler(
     cart,
     selectedCoupon
   );
-
-  useEffect(() => {
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    setTotalItemCount(count);
-  }, [cart]);
-
-  useEffect(() => {
-    localStorage.setItem("products", JSON.stringify(products));
-  }, [products]);
-
-  useEffect(() => {
-    localStorage.setItem("coupons", JSON.stringify(coupons));
-  }, [coupons]);
-
-  useEffect(() => {
-    if (cart.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    } else {
-      localStorage.removeItem("cart");
-    }
-  }, [cart]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
 
   const { addToCart } = useAddToCart(
     getRemainingStock,
@@ -99,19 +70,6 @@ const CartPage = ({
   );
 
   const totals = calculateCartTotal();
-
-  const filteredProducts = debouncedSearchTerm
-    ? products.filter(
-        (product) =>
-          product.name
-            .toLowerCase()
-            .includes(debouncedSearchTerm.toLowerCase()) ||
-          (product.description &&
-            product.description
-              .toLowerCase()
-              .includes(debouncedSearchTerm.toLowerCase()))
-      )
-    : products;
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">

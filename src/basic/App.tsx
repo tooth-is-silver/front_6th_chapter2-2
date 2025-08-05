@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CartItem, Coupon, ProductWithUI } from "../types";
 import { Header } from "./components/common/Header";
 import { Notification } from "../types";
@@ -20,6 +20,8 @@ export default function App() {
     }
     return [];
   });
+
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -51,6 +53,47 @@ export default function App() {
     }
     return initialProducts;
   });
+
+  useEffect(() => {
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    setTotalItemCount(count);
+  }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem("products", JSON.stringify(products));
+  }, [products]);
+
+  useEffect(() => {
+    localStorage.setItem("coupons", JSON.stringify(coupons));
+  }, [coupons]);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    } else {
+      localStorage.removeItem("cart");
+    }
+  }, [cart]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const filteredProducts = debouncedSearchTerm
+    ? products.filter(
+        (product) =>
+          product.name
+            .toLowerCase()
+            .includes(debouncedSearchTerm.toLowerCase()) ||
+          (product.description &&
+            product.description
+              .toLowerCase()
+              .includes(debouncedSearchTerm.toLowerCase()))
+      )
+    : products;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -86,8 +129,8 @@ export default function App() {
             coupons={coupons}
             selectedCoupon={selectedCoupon}
             setSelectedCoupon={setSelectedCoupon}
-            searchTerm={searchTerm}
-            setTotalItemCount={setTotalItemCount}
+            filteredProducts={filteredProducts}
+            debouncedSearchTerm={debouncedSearchTerm}
             addNotification={addNotification}
           />
         )}
