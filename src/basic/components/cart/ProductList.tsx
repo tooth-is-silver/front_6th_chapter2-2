@@ -49,11 +49,10 @@ const ProductList = ({ products, cart, addToCart }: ProductListProps) => {
               <div className="mb-3">
                 <p className="text-lg font-bold text-gray-900">
                   {formatPrice(
-                    products,
+                    products.find((p) => p.id === product.id),
                     false,
                     product.price,
-                    getRemainingStock(cart, product),
-                    product.id
+                    getRemainingStock(cart, product)
                   )}
                 </p>
                 {product.discounts.length > 0 && (

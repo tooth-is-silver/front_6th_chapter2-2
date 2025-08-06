@@ -13,17 +13,13 @@ import { ProductWithUI } from "../../types";
 // 4)분명 1개를 수정했는데 다른 곳도 QA를 해야하거나 코드 컨플릭트가 난다
 
 export const formatPrice = (
-  products: Array<ProductWithUI>,
+  product: ProductWithUI | undefined,
   isAdmin: boolean,
   price: number,
-  remainStock: number,
-  productId?: string
+  remainStock: number
 ): string => {
-  if (productId) {
-    const product = products.find((p) => p.id === productId);
-    if (product && remainStock <= 0) {
-      return "SOLD OUT";
-    }
+  if (product && remainStock <= 0) {
+    return "SOLD OUT";
   }
 
   return toLocaleStringKrPrice(price, isAdmin);

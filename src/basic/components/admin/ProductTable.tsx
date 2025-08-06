@@ -44,11 +44,10 @@ const ProductTable = ({
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {formatPrice(
-                products,
+                products.find((p) => p.id === product.id),
                 true,
                 product.price,
-                getRemainingStock(cart, product),
-                product.id
+                getRemainingStock(cart, product)
               )}
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
