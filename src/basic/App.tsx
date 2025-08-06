@@ -12,19 +12,8 @@ import { useFilteredProducts } from "./hooks/common/useFilteredProducts";
 import { useDebounce } from "./hooks/common/useDebounce";
 
 export default function App() {
-  const [cart, setCart] = useState<CartItem[]>(() => {
-    const saved = localStorage.getItem("cart");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  });
-
   const [searchTerm, setSearchTerm] = useState("");
+  const [cart, setCart] = useLocalStorageState<Array<CartItem>>("cart", []);
   const [coupons, setCoupons] = useLocalStorageState<Array<Coupon>>(
     "coupons",
     initialCoupons
