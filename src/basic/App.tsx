@@ -9,6 +9,7 @@ import { initialCoupons, initialProducts } from "./constants";
 import { useAddNotification } from "./hooks/notification/useAddNotification";
 import { useLocalStorageState } from "./hooks/common/useLocalStorageState";
 import { useFilteredProducts } from "./hooks/common/useFilteredProducts";
+import { useDebounce } from "./hooks/common/useDebounce";
 
 export default function App() {
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -23,7 +24,7 @@ export default function App() {
     return [];
   });
 
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [coupons, setCoupons] = useLocalStorageState<Array<Coupon>>(
     "coupons",
     initialCoupons
@@ -32,6 +33,8 @@ export default function App() {
     "products",
     initialProducts
   );
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const filteredProducts = useFilteredProducts(products, debouncedSearchTerm);
 
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
@@ -65,7 +68,8 @@ export default function App() {
         setIsAdmin={setIsAdmin}
         cart={cart}
         totalItemCount={totalItemCount}
-        setDebouncedSearchTerm={setDebouncedSearchTerm}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
       />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
