@@ -1,9 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
 import { CartItem, ProductForm, ProductWithUI } from "../../../types";
-import { formatPrice } from "../../utils/format";
-import { getRemainingStock } from "../../utils/stock";
-import { CloseIcon } from "../icons";
-import Input from "../common/Input";
 import ProductFormPanel from "./ProductFormPanel";
 import ProductTable from "./ProductTable";
 

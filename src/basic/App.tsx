@@ -7,6 +7,8 @@ import CartPage from "./pages/CartPage";
 import AdminPage from "./pages/AdminPage";
 import { initialCoupons, initialProducts } from "./constants";
 import { useAddNotification } from "./hooks/notification/useAddNotification";
+import { useLocalStorageState } from "./hooks/common/useLocalStorageState";
+import { useFilteredProducts } from "./hooks/common/useFilteredProducts";
 
 export default function App() {
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -22,37 +24,22 @@ export default function App() {
   });
 
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [coupons, setCoupons] = useLocalStorageState<Array<Coupon>>(
+    "coupons",
+    initialCoupons
+  );
+  const [products, setProducts] = useLocalStorageState<Array<ProductWithUI>>(
+    "products",
+    initialProducts
+  );
+  const filteredProducts = useFilteredProducts(products, debouncedSearchTerm);
+
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [totalItemCount, setTotalItemCount] = useState(0);
 
   const { addNotification } = useAddNotification(setNotifications);
-
-  const [coupons, setCoupons] = useState<Array<Coupon>>(() => {
-    const saved = localStorage.getItem("coupons");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return initialCoupons;
-      }
-    }
-    return initialCoupons;
-  });
-
-  const [products, setProducts] = useState<ProductWithUI[]>(() => {
-    const saved = localStorage.getItem("products");
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return initialProducts;
-      }
-    }
-    return initialProducts;
-  });
 
   useEffect(() => {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -75,26 +62,6 @@ export default function App() {
     }
   }, [cart]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  const filteredProducts = debouncedSearchTerm
-    ? products.filter(
-        (product) =>
-          product.name
-            .toLowerCase()
-            .includes(debouncedSearchTerm.toLowerCase()) ||
-          (product.description &&
-            product.description
-              .toLowerCase()
-              .includes(debouncedSearchTerm.toLowerCase()))
-      )
-    : products;
-
   return (
     <div className="min-h-screen bg-gray-50">
       <NotificationToast
@@ -104,10 +71,9 @@ export default function App() {
       <Header
         isAdmin={isAdmin}
         setIsAdmin={setIsAdmin}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
         cart={cart}
         totalItemCount={totalItemCount}
+        setDebouncedSearchTerm={setDebouncedSearchTerm}
       />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (

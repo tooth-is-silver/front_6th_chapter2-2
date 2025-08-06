@@ -1,24 +1,31 @@
 import { SetStateAction } from "jotai";
-import { Dispatch } from "react";
+import { Dispatch, useEffect, useState } from "react";
 import { CartItem } from "../../../types";
 import { GnbCartIcon } from "../icons";
 type HeaderProps = {
   isAdmin: boolean;
   setIsAdmin: Dispatch<SetStateAction<boolean>>;
-  searchTerm: string;
-  setSearchTerm: Dispatch<SetStateAction<string>>;
   cart: Array<CartItem>;
   totalItemCount: number;
+  setDebouncedSearchTerm: Dispatch<SetStateAction<string>>;
 };
 
 export const Header = ({
   isAdmin,
   setIsAdmin,
-  searchTerm,
-  setSearchTerm,
   cart,
   totalItemCount,
+  setDebouncedSearchTerm,
 }: HeaderProps) => {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40 border-b">
       <div className="max-w-7xl mx-auto px-4">
