@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
-import { ProductForm, ProductWithUI } from "../../types";
+import { AddNotification, ProductForm, ProductWithUI } from "../../types";
+import { NOTIFICATION_MESSAGE } from "../constants";
 
 export const productHandler = (
   editingProduct: string | null,
@@ -8,18 +9,21 @@ export const productHandler = (
   addProduct: (newProduct: Omit<ProductWithUI, "id">) => void,
   productForm: ProductForm,
   setProductForm: Dispatch<SetStateAction<ProductForm>>,
-  setShowProductForm: Dispatch<SetStateAction<boolean>>
+  setShowProductForm: Dispatch<SetStateAction<boolean>>,
+  addNotification: AddNotification
 ) => {
   const handleProductSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingProduct && editingProduct !== "new") {
       updateProduct(editingProduct, productForm);
       setEditingProduct(null);
+      addNotification(NOTIFICATION_MESSAGE.PRODUCT.UPDATE, "success");
     } else {
       addProduct({
         ...productForm,
         discounts: productForm.discounts,
       });
+      addNotification(NOTIFICATION_MESSAGE.PRODUCT.ADD, "success");
     }
     setProductForm({
       name: "",

@@ -1,5 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 import { ProductForm, ProductWithUI } from "../../types";
+import { useSetAtom } from "jotai";
+import { addNotificationAtom } from "../atoms/notification";
+import { NOTIFICATION_MESSAGE } from "../constants";
 
 export const productHandler = (
   editingProduct: string | null,
@@ -10,15 +13,25 @@ export const productHandler = (
   setProductForm: Dispatch<SetStateAction<ProductForm>>,
   setShowProductForm: Dispatch<SetStateAction<boolean>>
 ) => {
+  const addNotification = useSetAtom(addNotificationAtom);
+
   const handleProductSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingProduct && editingProduct !== "new") {
       updateProduct(editingProduct, productForm);
       setEditingProduct(null);
+      addNotification({
+        message: NOTIFICATION_MESSAGE.PRODUCT.UPDATE,
+        type: "success",
+      });
     } else {
       addProduct({
         ...productForm,
         discounts: productForm.discounts,
+      });
+      addNotification({
+        message: NOTIFICATION_MESSAGE.PRODUCT.ADD,
+        type: "success",
       });
     }
     setProductForm({

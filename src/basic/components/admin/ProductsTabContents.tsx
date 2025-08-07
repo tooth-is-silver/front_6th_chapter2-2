@@ -38,7 +38,8 @@ const ProductsTabContents = ({
     addProduct,
     productForm,
     setProductForm,
-    setShowProductForm
+    setShowProductForm,
+    addNotification
   );
 
   return (
