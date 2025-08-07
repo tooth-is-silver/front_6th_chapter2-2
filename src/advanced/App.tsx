@@ -1,11 +1,9 @@
-import { useEffect } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { CartItem, Coupon } from "../types";
+import { Coupon } from "../types";
 import { Header } from "./components/common/Header";
 import { NotificationToast } from "./components/common/NotificationToast";
 import CartPage from "./pages/CartPage";
 import AdminPage from "./pages/AdminPage";
-import { useLocalStorageState } from "./utils/hooks/useLocalStorageState";
 import { useFilteredProducts } from "./utils/hooks/useFilteredProducts";
 import { useDebounce } from "./utils/hooks/useDebounce";
 import { useProducts } from "./hooks/useProducts";
@@ -16,18 +14,14 @@ import { isAdminAtom } from "./atoms/admin";
 import { searchTermAtom } from "./atoms/search";
 import { addNotificationAtom } from "./atoms/notification";
 import { selectedCouponAtom } from "./atoms/coupon";
+import { cartWithLocalStorageAtom } from "./atoms/cart";
 
 export default function App() {
   const searchTerm = useAtomValue(searchTermAtom);
-  const [cart, setCart] = useLocalStorageState<Array<CartItem>>("cart", []);
-  const {
-    coupons,
-    hasCoupon,
-    addCoupon,
-    deleteCoupon,
-    applyCoupon,
-  } = useCoupons();
-  
+  const cart = useAtomValue(cartWithLocalStorageAtom);
+  const { coupons, hasCoupon, addCoupon, deleteCoupon, applyCoupon } =
+    useCoupons();
+
   const selectedCoupon = useAtomValue(selectedCouponAtom);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -44,16 +38,7 @@ export default function App() {
     calculateCartTotal,
     updateCartItemQuantity,
     getRemainingStock,
-    removeFromCart,
   } = cartHandler(cart, selectedCoupon);
-
-  useEffect(() => {
-    if (cart.length > 0) {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    } else {
-      localStorage.removeItem("cart");
-    }
-  }, [cart]);
 
   const handleDeleteCoupon = (couponCode: string) => {
     deleteCoupon(couponCode);
@@ -97,7 +82,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <NotificationToast />
-      <Header cart={cart} />
+      <Header />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <AdminPage
@@ -112,8 +97,6 @@ export default function App() {
           />
         ) : (
           <CartPage
-            cart={cart}
-            setCart={setCart}
             products={products}
             coupons={coupons}
             filteredProducts={filteredProducts}
@@ -122,7 +105,6 @@ export default function App() {
             totals={totals}
             getRemainingStock={getRemainingStock}
             updateCartItemQuantity={updateCartItemQuantity}
-            removeFromCart={removeFromCart}
             calculateItemTotal={calculateItemTotal}
           />
         )}

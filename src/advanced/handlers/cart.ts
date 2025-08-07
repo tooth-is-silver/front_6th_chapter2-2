@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
 import { CartItem, Coupon, Product } from "../../types";
 
 export const cartHandler = (
@@ -80,20 +79,10 @@ export const cartHandler = (
     return remaining;
   };
 
-  const removeFromCart = (
-    productId: string,
-    setCart: Dispatch<SetStateAction<Array<CartItem>>>
-  ) => {
-    setCart((prevCart) =>
-      prevCart.filter((item) => item.product.id !== productId)
-    );
-  };
-
   return {
     calculateItemTotal,
     calculateCartTotal,
     updateCartItemQuantity,
     getRemainingStock,
-    removeFromCart,
   };
 };

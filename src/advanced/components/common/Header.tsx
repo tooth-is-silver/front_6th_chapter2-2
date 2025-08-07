@@ -1,19 +1,14 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
-import { CartItem } from "../../../types";
 import { GnbCartIcon } from "../icons";
 import { isAdminAtom } from "../../atoms/admin";
 import { searchTermAtom } from "../../atoms/search";
+import { cartAtom } from "../../atoms/cart";
 
-type HeaderProps = {
-  cart: Array<CartItem>;
-};
-
-export const Header = ({
-  cart,
-}: HeaderProps) => {
+export const Header = () => {
   const [isAdmin, setIsAdmin] = useAtom(isAdminAtom);
   const [searchTerm, setSearchTerm] = useAtom(searchTermAtom);
+  const cart = useAtomValue(cartAtom);
   const [totalItemCount, setTotalItemCount] = useState(0);
 
   useEffect(() => {

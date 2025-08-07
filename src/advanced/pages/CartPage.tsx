@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { useCallback } from "react";
 import { CartItem, ProductWithUI, Coupon, Product } from "../../types";
 import { CartIcon } from "../components/icons";
 import ProductList from "../components/cart/ProductList";
@@ -8,10 +8,9 @@ import { NOTIFICATION_MESSAGE } from "../constants";
 import { useAtom, useSetAtom } from "jotai";
 import { addNotificationAtom } from "../atoms/notification";
 import { selectedCouponAtom } from "../atoms/coupon";
+import { cartWithLocalStorageAtom } from "../atoms/cart";
 
 interface CartPageProps {
-  cart: Array<CartItem>;
-  setCart: Dispatch<SetStateAction<Array<CartItem>>>;
   products: Array<ProductWithUI>;
   coupons: Array<Coupon>;
   filteredProducts: Array<ProductWithUI>;
@@ -23,10 +22,6 @@ interface CartPageProps {
     productId: string,
     newQuantity: number
   ) => CartItem[];
-  removeFromCart: (
-    productId: string,
-    setCart: React.Dispatch<React.SetStateAction<Array<CartItem>>>
-  ) => void;
   totals: {
     totalBeforeDiscount: number;
     totalAfterDiscount: number;
@@ -35,8 +30,6 @@ interface CartPageProps {
 }
 
 const CartPage = ({
-  cart,
-  setCart,
   products,
   coupons,
   filteredProducts,
@@ -44,12 +37,12 @@ const CartPage = ({
   handleApplyCoupon,
   getRemainingStock,
   updateCartItemQuantity,
-  removeFromCart,
   totals,
   calculateItemTotal,
 }: CartPageProps) => {
   const addNotification = useSetAtom(addNotificationAtom);
   const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
+  const [cart, setCart] = useAtom(cartWithLocalStorageAtom);
 
   const addToCart = useCallback(
     (product: ProductWithUI) => {
@@ -62,28 +55,24 @@ const CartPage = ({
         return;
       }
 
-      setCart((prevCart) => {
-        const existingItem = prevCart.find(
-          (item) => item.product.id === product.id
-        );
+      const existingItem = cart.find((item) => item.product.id === product.id);
 
-        if (existingItem) {
-          const newQuantity = existingItem.quantity + 1;
+      if (existingItem) {
+        const newQuantity = existingItem.quantity + 1;
 
-          if (newQuantity > product.stock) {
-            addNotification({
-              message: NOTIFICATION_MESSAGE.ERROR.INSUFFICIENT_STOCK(
-                product.stock
-              ),
-              type: "error",
-            });
-            return prevCart;
-          }
-          return updateCartItemQuantity(prevCart, product.id, newQuantity);
+        if (newQuantity > product.stock) {
+          addNotification({
+            message: NOTIFICATION_MESSAGE.ERROR.INSUFFICIENT_STOCK(
+              product.stock
+            ),
+            type: "error",
+          });
+          return;
         }
-
-        return [...prevCart, { product, quantity: 1 }];
-      });
+        setCart(updateCartItemQuantity(cart, product.id, newQuantity));
+      } else {
+        setCart([...cart, { product, quantity: 1 }]);
+      }
 
       addNotification({
         message: NOTIFICATION_MESSAGE.CART.ADD,
@@ -95,7 +84,7 @@ const CartPage = ({
 
   const updateQuantity = (productId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      removeFromCart(productId, setCart);
+      handleRemoveFromCart(productId);
       return;
     }
 
@@ -124,7 +113,7 @@ const CartPage = ({
   }, [addNotification]);
 
   const handleRemoveFromCart = (productId: string) => {
-    removeFromCart(productId, setCart);
+    setCart(cart.filter((item) => item.product.id !== productId));
   };
 
   return (

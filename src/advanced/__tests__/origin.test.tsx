@@ -438,7 +438,7 @@ describe('쇼핑몰 앱 통합 테스트', () => {
     });
 
     test('페이지 새로고침 후에도 데이터가 유지된다', () => {
-      const { unmount } = render(<App />);
+      const { unmount } = render(<Provider><App /></Provider>);
       
       // 장바구니에 상품 추가
       fireEvent.click(screen.getAllByText('장바구니 담기')[0]);
