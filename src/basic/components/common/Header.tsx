@@ -7,7 +7,6 @@ type HeaderProps = {
   isAdmin: boolean;
   setIsAdmin: Dispatch<SetStateAction<boolean>>;
   cart: Array<CartItem>;
-  totalItemCount: number;
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
 };
@@ -16,10 +15,16 @@ export const Header = ({
   isAdmin,
   setIsAdmin,
   cart,
-  totalItemCount,
   searchTerm,
   setSearchTerm,
 }: HeaderProps) => {
+  const [totalItemCount, setTotalItemCount] = useState(0);
+
+  useEffect(() => {
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    setTotalItemCount(count);
+  }, [cart]);
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-40 border-b">
       <div className="max-w-7xl mx-auto px-4">

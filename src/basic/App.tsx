@@ -34,12 +34,6 @@ export default function App() {
   const filteredProducts = useFilteredProducts(products, debouncedSearchTerm);
 
   const [isAdmin, setIsAdmin] = useState(false);
-  const [totalItemCount, setTotalItemCount] = useState(0);
-
-  useEffect(() => {
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    setTotalItemCount(count);
-  }, [cart]);
 
   useEffect(() => {
     if (cart.length > 0) {
@@ -82,7 +76,6 @@ export default function App() {
         isAdmin={isAdmin}
         setIsAdmin={setIsAdmin}
         cart={cart}
-        totalItemCount={totalItemCount}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
