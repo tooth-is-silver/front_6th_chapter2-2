@@ -1,5 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
-import { CartItem, ProductForm, ProductWithUI } from "../../../types";
+import {
+  AddNotification,
+  CartItem,
+  ProductForm,
+  ProductWithUI,
+} from "../../../types";
 import ProductFormPanel from "./ProductFormPanel";
 import ProductTable from "./ProductTable";
 
@@ -14,11 +19,8 @@ interface ProductsTabContentsProps {
   setShowProductForm: Dispatch<SetStateAction<boolean>>;
   startEditProduct: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
-  addNotification: (
-    message: string,
-    type?: "error" | "success" | "warning"
-  ) => void;
   handleProductSubmit: (e: React.FormEvent) => void;
+  addNotification: AddNotification;
 }
 
 const ProductsTabContents = ({
@@ -32,8 +34,8 @@ const ProductsTabContents = ({
   setShowProductForm,
   startEditProduct,
   deleteProduct,
-  addNotification,
   handleProductSubmit,
+  addNotification,
 }: ProductsTabContentsProps) => {
   return (
     <section className="bg-white rounded-lg border border-gray-200">
@@ -74,8 +76,8 @@ const ProductsTabContents = ({
           productForm={productForm}
           setProductForm={setProductForm}
           setShowProductForm={setShowProductForm}
-          addNotification={addNotification}
           handleProductSubmit={handleProductSubmit}
+          addNotification={addNotification}
         />
       )}
     </section>

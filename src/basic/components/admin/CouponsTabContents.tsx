@@ -1,30 +1,28 @@
 import { Dispatch, SetStateAction } from "react";
-import { Coupon, CouponForm } from "../../../types";
+import { AddNotification, Coupon, CouponForm } from "../../../types";
 import { AddIcon, DeleteIcon } from "../icons";
 import Input from "../common/Input";
+import { NOTIFICATION_MESSAGE } from "../../constants";
 
 interface CouponsTabContentsProps {
   coupons: Array<Coupon>;
-  deleteCoupon: (couponCode: string) => void;
   couponForm: CouponForm;
   setCouponForm: Dispatch<SetStateAction<CouponForm>>;
   showCouponForm: boolean;
   setShowCouponForm: Dispatch<SetStateAction<boolean>>;
   handleCouponSubmit: (e: React.FormEvent) => void;
-  addNotification: (
-    message: string,
-    type?: "error" | "success" | "warning"
-  ) => void;
+  handleDeleteCoupon: (couponCode: string) => void;
+  addNotification: AddNotification;
 }
 
 const CouponsTabContents = ({
   coupons,
-  deleteCoupon,
   couponForm,
   setCouponForm,
   showCouponForm,
   setShowCouponForm,
   handleCouponSubmit,
+  handleDeleteCoupon,
   addNotification,
 }: CouponsTabContentsProps) => {
   return (
@@ -54,7 +52,7 @@ const CouponsTabContents = ({
                   </div>
                 </div>
                 <button
-                  onClick={() => deleteCoupon(coupon.code)}
+                  onClick={() => handleDeleteCoupon(coupon.code)}
                   className="text-gray-400 hover:text-red-600 transition-colors"
                 >
                   <DeleteIcon />
@@ -151,7 +149,7 @@ const CouponsTabContents = ({
                     if (couponForm.discountType === "percentage") {
                       if (value > 100) {
                         addNotification(
-                          "할인율은 100%를 초과할 수 없습니다",
+                          NOTIFICATION_MESSAGE.ERROR.MAX_SALE_PERCENT,
                           "error"
                         );
                         setCouponForm({
@@ -167,7 +165,7 @@ const CouponsTabContents = ({
                     } else {
                       if (value > 100000) {
                         addNotification(
-                          "할인 금액은 100,000원을 초과할 수 없습니다",
+                          NOTIFICATION_MESSAGE.ERROR.MAX_SALE_PRICE,
                           "error"
                         );
                         setCouponForm({

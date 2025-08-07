@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import Input from "../common/Input";
-import { ProductForm } from "../../../types";
+import { AddNotification, ProductForm } from "../../../types";
 import { CloseIcon } from "../icons";
 import { NOTIFICATION_MESSAGE } from "../../constants";
 
@@ -10,11 +10,8 @@ interface ProductFormPanelProps {
   setEditingProduct: Dispatch<SetStateAction<string | null>>;
   productForm: ProductForm;
   setProductForm: Dispatch<SetStateAction<ProductForm>>;
-  addNotification: (
-    message: string,
-    type?: "error" | "success" | "warning"
-  ) => void;
   setShowProductForm: Dispatch<SetStateAction<boolean>>;
+  addNotification: AddNotification;
 }
 
 const ProductFormPanel = ({
@@ -23,8 +20,8 @@ const ProductFormPanel = ({
   setEditingProduct,
   productForm,
   setProductForm,
-  addNotification,
   setShowProductForm,
+  addNotification,
 }: ProductFormPanelProps) => {
   return (
     <div className="p-6 border-t border-gray-200 bg-gray-50">

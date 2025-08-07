@@ -1,9 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
-import { CartItem, ProductWithUI, Coupon } from "../../types";
+import { CartItem, ProductWithUI, Coupon, AddNotification } from "../../types";
 import { CartIcon } from "../components/icons";
 import { cartHandler } from "../handlers/cart";
 import { useAddToCart } from "../hooks/cart/useAddToCart";
-import { useApplyCoupon } from "../hooks/cart/useApplyCoupon";
 import { useRemoveFromCart } from "../hooks/cart/useRemoveFormCart";
 import { useUpdateQuantity } from "../hooks/cart/useUpdateQuantity";
 import { useCompleteOrder } from "../hooks/order/useCompleteOrder";
@@ -21,10 +20,8 @@ interface CartPageProps {
   setSelectedCoupon: Dispatch<SetStateAction<Coupon | null>>;
   filteredProducts: Array<ProductWithUI>;
   debouncedSearchTerm: string;
-  addNotification: (
-    message: string,
-    type?: "error" | "success" | "warning"
-  ) => void;
+  addNotification: AddNotification;
+  handleApplyCoupon: (coupon: Coupon, currentTotal: number) => void;
 }
 
 const CartPage = ({
@@ -37,6 +34,7 @@ const CartPage = ({
   filteredProducts,
   debouncedSearchTerm,
   addNotification,
+  handleApplyCoupon,
 }: CartPageProps) => {
   const { calculateItemTotal, calculateCartTotal } = cartHandler(
     cart,
@@ -57,12 +55,6 @@ const CartPage = ({
     addNotification,
     setCart,
     getRemainingStock
-  );
-
-  const { applyCoupon } = useApplyCoupon(
-    calculateCartTotal,
-    addNotification,
-    setSelectedCoupon
   );
 
   const { completeOrder } = useCompleteOrder(
@@ -138,10 +130,12 @@ const CartPage = ({
                       className="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                       value={selectedCoupon?.code || ""}
                       onChange={(e) => {
+                        const currentTotal =
+                          calculateCartTotal().totalAfterDiscount;
                         const coupon = coupons.find(
                           (c) => c.code === e.target.value
                         );
-                        if (coupon) applyCoupon(coupon);
+                        if (coupon) handleApplyCoupon(coupon, currentTotal);
                         else setSelectedCoupon(null);
                       }}
                     >

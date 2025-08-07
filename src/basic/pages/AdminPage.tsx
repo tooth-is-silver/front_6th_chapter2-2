@@ -1,38 +1,31 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import { couponHandler } from "../handlers/coupon";
-import { useAddCoupon } from "../hooks/coupon/useAddCoupon";
-import { CartItem, Coupon, ProductWithUI } from "../../types";
-import { useDeleteCoupon } from "../hooks/coupon/useDeleteCoupon";
+import { AddNotification, CartItem, Coupon, ProductWithUI } from "../../types";
 import { productHandler } from "../handlers/product";
 import ProductsTabContents from "../components/admin/ProductsTabContents";
 import CouponsTabContents from "../components/admin/CouponsTabContents";
 
 interface AdminPageProps {
   coupons: Array<Coupon>;
-  setCoupons: Dispatch<SetStateAction<Array<Coupon>>>;
   products: Array<ProductWithUI>;
-  selectedCoupon: Coupon | null;
-  setSelectedCoupon: Dispatch<SetStateAction<Coupon | null>>;
-  addNotification: (
-    message: string,
-    type?: "error" | "success" | "warning"
-  ) => void;
   cart: Array<CartItem>;
   addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
   deleteProduct: (productId: string) => void;
   updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
+  handleAddCoupon: (newCoupon: Coupon) => void;
+  handleDeleteCoupon: (couponCode: string) => void;
+  addNotification: AddNotification;
 }
 const AdminPage = ({
   coupons,
-  setCoupons,
   products,
-  selectedCoupon,
-  setSelectedCoupon,
-  addNotification,
   cart,
   addProduct,
   deleteProduct,
   updateProduct,
+  handleAddCoupon,
+  handleDeleteCoupon,
+  addNotification,
 }: AdminPageProps) => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "coupons">(
@@ -54,15 +47,6 @@ const AdminPage = ({
     discountValue: 0,
   });
 
-  const { addCoupon } = useAddCoupon(coupons, setCoupons, addNotification);
-
-  const { deleteCoupon } = useDeleteCoupon(
-    selectedCoupon,
-    setSelectedCoupon,
-    setCoupons,
-    addNotification
-  );
-
   const { handleProductSubmit, startEditProduct } = productHandler(
     editingProduct,
     setEditingProduct,
@@ -74,7 +58,7 @@ const AdminPage = ({
   );
 
   const { handleCouponSubmit } = couponHandler(
-    addCoupon,
+    handleAddCoupon,
     couponForm,
     setCouponForm,
     setShowCouponForm
@@ -123,13 +107,13 @@ const AdminPage = ({
           setShowProductForm={setShowProductForm}
           startEditProduct={startEditProduct}
           deleteProduct={deleteProduct}
-          addNotification={addNotification}
           handleProductSubmit={handleProductSubmit}
+          addNotification={addNotification}
         />
       ) : (
         <CouponsTabContents
           coupons={coupons}
-          deleteCoupon={deleteCoupon}
+          handleDeleteCoupon={handleDeleteCoupon}
           couponForm={couponForm}
           setCouponForm={setCouponForm}
           showCouponForm={showCouponForm}
