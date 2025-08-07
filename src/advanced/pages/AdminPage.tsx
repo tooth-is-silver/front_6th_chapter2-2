@@ -1,17 +1,15 @@
 import { useState } from "react";
-import { Coupon, Product, ProductWithUI } from "../../types";
+import { Coupon, Product } from "../../types";
 import ProductsTabContents from "../components/admin/ProductsTabContents";
 import CouponsTabContents from "../components/admin/CouponsTabContents";
 
 interface AdminPageProps {
-  coupons: Array<Coupon>;
   handleAddCoupon: (newCoupon: Coupon) => void;
   handleDeleteCoupon: (couponCode: string) => void;
   getRemainingStock: (product: Product) => number;
 }
 
 const AdminPage = ({
-  coupons,
   handleAddCoupon,
   handleDeleteCoupon,
   getRemainingStock,
@@ -55,7 +53,6 @@ const AdminPage = ({
         <ProductsTabContents getRemainingStock={getRemainingStock} />
       ) : (
         <CouponsTabContents
-          coupons={coupons}
           handleDeleteCoupon={handleDeleteCoupon}
           handleAddCoupon={handleAddCoupon}
         />

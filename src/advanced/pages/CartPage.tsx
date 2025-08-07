@@ -5,14 +5,14 @@ import ProductList from "../components/cart/ProductList";
 import EmptyCart from "../components/cart/EmptyCart";
 import CartItemList from "../components/cart/CartItemList";
 import { NOTIFICATION_MESSAGE } from "../constants";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { addNotificationAtom } from "../atoms/notification";
 import { selectedCouponAtom } from "../atoms/coupon";
 import { cartWithLocalStorageAtom } from "../atoms/cart";
+import { productsWithLocalStorageAtom } from "../atoms/products";
+import { couponsWithLocalStorageAtom } from "../atoms/coupons";
 
 interface CartPageProps {
-  products: Array<ProductWithUI>;
-  coupons: Array<Coupon>;
   filteredProducts: Array<ProductWithUI>;
   debouncedSearchTerm: string;
   handleApplyCoupon: (coupon: Coupon, currentTotal: number) => void;
@@ -30,8 +30,6 @@ interface CartPageProps {
 }
 
 const CartPage = ({
-  products,
-  coupons,
   filteredProducts,
   debouncedSearchTerm,
   handleApplyCoupon,
@@ -40,6 +38,8 @@ const CartPage = ({
   totals,
   calculateItemTotal,
 }: CartPageProps) => {
+  const coupons = useAtomValue(couponsWithLocalStorageAtom);
+  const products = useAtomValue(productsWithLocalStorageAtom);
   const addNotification = useSetAtom(addNotificationAtom);
   const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
   const [cart, setCart] = useAtom(cartWithLocalStorageAtom);

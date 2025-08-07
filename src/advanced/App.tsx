@@ -6,7 +6,6 @@ import CartPage from "./pages/CartPage";
 import AdminPage from "./pages/AdminPage";
 import { useFilteredProducts } from "./utils/hooks/useFilteredProducts";
 import { useDebounce } from "./utils/hooks/useDebounce";
-import { useCoupons } from "./hooks/useCoupons";
 import { NOTIFICATION_MESSAGE } from "./constants";
 import { cartHandler } from "./handlers/cart";
 import { isAdminAtom } from "./atoms/admin";
@@ -15,12 +14,20 @@ import { addNotificationAtom } from "./atoms/notification";
 import { selectedCouponAtom } from "./atoms/coupon";
 import { cartWithLocalStorageAtom } from "./atoms/cart";
 import { productsWithLocalStorageAtom } from "./atoms/products";
+import {
+  hasCouponAtom,
+  addCouponAtom,
+  deleteCouponAtom,
+  applyCouponAtom,
+} from "./atoms/coupons";
 
 export default function App() {
   const searchTerm = useAtomValue(searchTermAtom);
   const cart = useAtomValue(cartWithLocalStorageAtom);
-  const { coupons, hasCoupon, addCoupon, deleteCoupon, applyCoupon } =
-    useCoupons();
+  const hasCoupon = useAtomValue(hasCouponAtom);
+  const addCouponAction = useSetAtom(addCouponAtom);
+  const deleteCouponAction = useSetAtom(deleteCouponAtom);
+  const applyCouponAction = useSetAtom(applyCouponAtom);
 
   const selectedCoupon = useAtomValue(selectedCouponAtom);
 
@@ -41,7 +48,7 @@ export default function App() {
   } = cartHandler(cart, selectedCoupon);
 
   const handleDeleteCoupon = (couponCode: string) => {
-    deleteCoupon(couponCode);
+    deleteCouponAction(couponCode);
     addNotification({
       message: NOTIFICATION_MESSAGE.COUPON.DELETE,
       type: "success",
@@ -49,7 +56,10 @@ export default function App() {
   };
 
   const handleAddCoupon = (newCoupon: Coupon) => {
-    const isSuccessAddCoupon = addCoupon(newCoupon, hasCoupon(newCoupon.code));
+    const isSuccessAddCoupon = addCouponAction({
+      newCoupon,
+      isCouponExists: hasCoupon(newCoupon.code),
+    });
     if (isSuccessAddCoupon) {
       addNotification({
         message: NOTIFICATION_MESSAGE.COUPON.ADD,
@@ -64,7 +74,7 @@ export default function App() {
   };
 
   const handleApplyCoupon = (coupon: Coupon, currentTotal: number) => {
-    const canApplyCoupon = applyCoupon(coupon, currentTotal);
+    const canApplyCoupon = applyCouponAction({ coupon, currentTotal });
     if (canApplyCoupon) {
       addNotification({
         message: NOTIFICATION_MESSAGE.COUPON.APPLIED,
@@ -86,14 +96,12 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <AdminPage
-            coupons={coupons}
             handleAddCoupon={handleAddCoupon}
             handleDeleteCoupon={handleDeleteCoupon}
             getRemainingStock={getRemainingStock}
           />
         ) : (
           <CartPage
-            coupons={coupons}
             filteredProducts={filteredProducts}
             debouncedSearchTerm={debouncedSearchTerm}
             handleApplyCoupon={handleApplyCoupon}

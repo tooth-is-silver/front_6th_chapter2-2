@@ -5,19 +5,19 @@ import Input from "../common/Input";
 import { NOTIFICATION_MESSAGE } from "../../constants";
 import { couponHandler } from "../../handlers/coupon";
 import { addNotificationAtom } from "../../atoms/notification";
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
+import { couponsWithLocalStorageAtom } from "../../atoms/coupons";
 
 interface CouponsTabContentsProps {
-  coupons: Array<Coupon>;
   handleDeleteCoupon: (couponCode: string) => void;
   handleAddCoupon: (newCoupon: Coupon) => void;
 }
 
 const CouponsTabContents = ({
-  coupons,
   handleDeleteCoupon,
   handleAddCoupon,
 }: CouponsTabContentsProps) => {
+  const coupons = useAtomValue(couponsWithLocalStorageAtom);
   const addNotification = useSetAtom(addNotificationAtom);
   const [showCouponForm, setShowCouponForm] = useState(false);
   const [couponForm, setCouponForm] = useState({
