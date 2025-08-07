@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { CartItem, Coupon } from "../types";
 import { Header } from "./components/common/Header";
-import { Notification } from "../types";
 import { NotificationToast } from "./components/common/NotificationToast";
 import CartPage from "./pages/CartPage";
 import AdminPage from "./pages/AdminPage";
 import { initialCoupons } from "./constants";
-import { useAddNotification } from "./hooks/notification/useAddNotification";
 import { useLocalStorageState } from "./utils/hooks/useLocalStorageState";
 import { useFilteredProducts } from "./utils/hooks/useFilteredProducts";
 import { useDebounce } from "./utils/hooks/useDebounce";
 import { useProducts } from "./hooks/useProducts";
+import { useNotification } from "./hooks/useNotification";
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,15 +20,16 @@ export default function App() {
   );
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  const { notifications, addNotification, removeNotification } =
+    useNotification();
   const { products, addProduct, deleteProduct, updateProduct } = useProducts();
+
   const filteredProducts = useFilteredProducts(products, debouncedSearchTerm);
 
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [totalItemCount, setTotalItemCount] = useState(0);
-
-  const { addNotification } = useAddNotification(setNotifications);
 
   useEffect(() => {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -48,7 +48,7 @@ export default function App() {
     <div className="min-h-screen bg-gray-50">
       <NotificationToast
         notifications={notifications}
-        setNotifications={setNotifications}
+        removeNotification={removeNotification}
       />
       <Header
         isAdmin={isAdmin}

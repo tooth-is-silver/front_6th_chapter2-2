@@ -1,13 +1,12 @@
-import { Dispatch, SetStateAction } from "react";
 import { Notification } from "../../../types";
 import { CloseIcon } from "../icons";
 
 export const NotificationToast = ({
   notifications,
-  setNotifications,
+  removeNotification,
 }: {
   notifications: Array<Notification>;
-  setNotifications: Dispatch<SetStateAction<Notification[]>>;
+  removeNotification: (id: string) => void;
 }) => {
   if (notifications.length <= 0) return null;
 
@@ -26,9 +25,7 @@ export const NotificationToast = ({
         >
           <span className="mr-2">{notif.message}</span>
           <button
-            onClick={() =>
-              setNotifications((prev) => prev.filter((n) => n.id !== notif.id))
-            }
+            onClick={() => removeNotification(notif.id)}
             className="text-white hover:text-gray-200"
           >
             <CloseIcon />
