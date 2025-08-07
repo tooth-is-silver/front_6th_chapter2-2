@@ -49,3 +49,28 @@ export const initialCoupons: Coupon[] = [
     discountValue: 10,
   },
 ];
+
+export const NOTIFICATION_MESSAGE = {
+  PRODUCT: {
+    ADD: "상품이 추가되었습니다.",
+    UPDATE: "상품이 수정되었습니다.",
+    DELETE: "상품이 삭제되었습니다.",
+  },
+  CART: {
+    ADD: "장바구니에 담았습니다",
+  },
+  COUPON: {
+    ADD: "쿠폰이 추가되었습니다.",
+    APPLIED: "쿠폰이 적용되었습니다.",
+    DELETE: "쿠폰이 삭제되었습니다.",
+  },
+  ERROR: {
+    MIN_PRICE: "가격은 0보다 커야 합니다",
+    MIN_COUPON: "percentage 쿠폰은 10,000원 이상 구매 시 사용 가능합니다.",
+    EXISTED_COUPON: "이미 존재하는 쿠폰 코드입니다.",
+    NONE_STOCK: "재고가 부족합니다!",
+    MIN_STOCK: "재고는 0보다 커야 합니다",
+    MAX_STOCK: "재고는 9999개를 초과할 수 없습니다",
+    INSUFFICIENT_STOCK: (stock: number) => `재고는 ${stock}개까지만 있습니다.`,
+  },
+} as const;
