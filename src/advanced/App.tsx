@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useAtom } from "jotai";
+import { useEffect } from "react";
+import { useAtom, useAtomValue } from "jotai";
 import { CartItem, Coupon } from "../types";
 import { Header } from "./components/common/Header";
 import { NotificationToast } from "./components/common/NotificationToast";
@@ -14,9 +14,10 @@ import { useCoupons } from "./hooks/useCoupons";
 import { NOTIFICATION_MESSAGE } from "./constants";
 import { cartHandler } from "./handlers/cart";
 import { isAdminAtom } from "./atoms/admin";
+import { searchTermAtom } from "./atoms/search";
 
 export default function App() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const searchTerm = useAtomValue(searchTermAtom);
   const [cart, setCart] = useLocalStorageState<Array<CartItem>>("cart", []);
   const {
     coupons,
@@ -84,11 +85,7 @@ export default function App() {
         notifications={notifications}
         removeNotification={removeNotification}
       />
-      <Header
-        cart={cart}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+      <Header cart={cart} />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <AdminPage
