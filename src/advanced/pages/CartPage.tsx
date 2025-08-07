@@ -7,7 +7,7 @@ import CartItemList from "../components/cart/CartItemList";
 import { NOTIFICATION_MESSAGE } from "../constants";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { addNotificationAtom } from "../atoms/notification";
-import { selectedCouponAtom } from "../atoms/coupon";
+import { selectedCouponAtom } from "../atoms/selectedCoupon";
 import { cartWithLocalStorageAtom } from "../atoms/cart";
 import { productsWithLocalStorageAtom } from "../atoms/products";
 import { couponsWithLocalStorageAtom } from "../atoms/coupons";

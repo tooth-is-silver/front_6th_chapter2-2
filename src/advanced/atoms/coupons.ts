@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { Coupon } from "../../types";
 import { initialCoupons } from "../constants";
-import { selectedCouponAtom } from "./coupon";
+import { selectedCouponAtom } from "./selectedCoupon";
 
 const getInitialCoupons = (): Array<Coupon> => {
   try {

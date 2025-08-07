@@ -11,7 +11,7 @@ import { cartHandler } from "./handlers/cart";
 import { isAdminAtom } from "./atoms/admin";
 import { searchTermAtom } from "./atoms/search";
 import { addNotificationAtom } from "./atoms/notification";
-import { selectedCouponAtom } from "./atoms/coupon";
+import { selectedCouponAtom } from "./atoms/selectedCoupon";
 import { cartWithLocalStorageAtom } from "./atoms/cart";
 import { productsWithLocalStorageAtom } from "./atoms/products";
 import {

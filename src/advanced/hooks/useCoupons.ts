@@ -2,7 +2,7 @@ import { useAtom } from "jotai";
 import { Coupon } from "../../types";
 import { initialCoupons } from "../constants";
 import { useLocalStorageState } from "../utils/hooks/useLocalStorageState";
-import { selectedCouponAtom } from "../atoms/coupon";
+import { selectedCouponAtom } from "../atoms/selectedCoupon";
 
 export function useCoupons() {
   const [coupons, setCoupons] = useLocalStorageState<Array<Coupon>>(
