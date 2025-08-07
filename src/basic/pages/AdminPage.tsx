@@ -2,10 +2,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { couponHandler } from "../handlers/coupon";
 import { useAddCoupon } from "../hooks/coupon/useAddCoupon";
 import { CartItem, Coupon, ProductWithUI } from "../../types";
-import { useDeleteProduct } from "../hooks/product/useDeleteProduct";
 import { useDeleteCoupon } from "../hooks/coupon/useDeleteCoupon";
-import { useAddProduct } from "../hooks/product/useAddProduct";
-import { useUpdateProduct } from "../hooks/product/useUpdateProduct";
 import { productHandler } from "../handlers/product";
 import ProductsTabContents from "../components/admin/ProductsTabContents";
 import CouponsTabContents from "../components/admin/CouponsTabContents";
@@ -14,7 +11,6 @@ interface AdminPageProps {
   coupons: Array<Coupon>;
   setCoupons: Dispatch<SetStateAction<Array<Coupon>>>;
   products: Array<ProductWithUI>;
-  setProducts: Dispatch<SetStateAction<Array<ProductWithUI>>>;
   selectedCoupon: Coupon | null;
   setSelectedCoupon: Dispatch<SetStateAction<Coupon | null>>;
   addNotification: (
@@ -22,16 +18,21 @@ interface AdminPageProps {
     type?: "error" | "success" | "warning"
   ) => void;
   cart: Array<CartItem>;
+  addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
+  deleteProduct: (productId: string) => void;
+  updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
 }
 const AdminPage = ({
   coupons,
   setCoupons,
   products,
-  setProducts,
   selectedCoupon,
   setSelectedCoupon,
   addNotification,
   cart,
+  addProduct,
+  deleteProduct,
+  updateProduct,
 }: AdminPageProps) => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "coupons">(
@@ -53,10 +54,7 @@ const AdminPage = ({
     discountValue: 0,
   });
 
-  const { addProduct } = useAddProduct(setProducts, addNotification);
-  const { updateProduct } = useUpdateProduct(setProducts, addNotification);
   const { addCoupon } = useAddCoupon(coupons, setCoupons, addNotification);
-  const { deleteProduct } = useDeleteProduct(setProducts, addNotification);
 
   const { deleteCoupon } = useDeleteCoupon(
     selectedCoupon,

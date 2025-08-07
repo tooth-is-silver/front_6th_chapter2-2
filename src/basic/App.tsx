@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { CartItem, Coupon, ProductWithUI } from "../types";
+import { CartItem, Coupon } from "../types";
 import { Header } from "./components/common/Header";
 import { Notification } from "../types";
 import { NotificationToast } from "./components/common/NotificationToast";
 import CartPage from "./pages/CartPage";
 import AdminPage from "./pages/AdminPage";
-import { initialCoupons, initialProducts } from "./constants";
+import { initialCoupons } from "./constants";
 import { useAddNotification } from "./hooks/notification/useAddNotification";
 import { useLocalStorageState } from "./utils/hooks/useLocalStorageState";
 import { useFilteredProducts } from "./utils/hooks/useFilteredProducts";
 import { useDebounce } from "./utils/hooks/useDebounce";
+import { useProducts } from "./hooks/useProducts";
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,12 +19,9 @@ export default function App() {
     "coupons",
     initialCoupons
   );
-  const [products, setProducts] = useLocalStorageState<Array<ProductWithUI>>(
-    "products",
-    initialProducts
-  );
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const { products, addProduct, deleteProduct, updateProduct } = useProducts();
   const filteredProducts = useFilteredProducts(products, debouncedSearchTerm);
 
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
@@ -63,14 +61,16 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <AdminPage
+            products={products}
             coupons={coupons}
             setCoupons={setCoupons}
-            products={products}
-            setProducts={setProducts}
             selectedCoupon={selectedCoupon}
             setSelectedCoupon={setSelectedCoupon}
             addNotification={addNotification}
             cart={cart}
+            addProduct={addProduct}
+            deleteProduct={deleteProduct}
+            updateProduct={updateProduct}
           />
         ) : (
           <CartPage
