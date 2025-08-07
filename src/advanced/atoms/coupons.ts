@@ -22,7 +22,7 @@ export const couponsWithLocalStorageAtom = atom(
     }
     return currentCoupons;
   },
-  (get, set, newCoupons: Array<Coupon>) => {
+  (_get, set, newCoupons: Array<Coupon>) => {
     set(couponsAtom, newCoupons);
     localStorage.setItem("coupons", JSON.stringify(newCoupons));
   }
@@ -66,7 +66,7 @@ export const deleteCouponAtom = atom(null, (get, set, couponCode: string) => {
 export const applyCouponAtom = atom(
   null,
   (
-    get,
+    _get,
     set,
     { coupon, currentTotal }: { coupon: Coupon; currentTotal: number }
   ) => {

@@ -21,7 +21,7 @@ export const productsWithLocalStorageAtom = atom(
     }
     return currentProducts;
   },
-  (get, set, newProducts: Array<ProductWithUI>) => {
+  (_get, set, newProducts: Array<ProductWithUI>) => {
     set(productsAtom, newProducts);
     localStorage.setItem("products", JSON.stringify(newProducts));
   }

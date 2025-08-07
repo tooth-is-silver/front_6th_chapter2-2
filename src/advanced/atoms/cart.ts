@@ -21,7 +21,7 @@ export const cartWithLocalStorageAtom = atom(
     }
     return currentCart;
   },
-  (get, set, newCart: Array<CartItem>) => {
+  (_get, set, newCart: Array<CartItem>) => {
     set(cartAtom, newCart);
 
     if (newCart.length > 0) {

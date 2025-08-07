@@ -5,7 +5,7 @@ export const notificationsAtom = atom<Array<Notification>>([]);
 
 export const addNotificationAtom = atom(
   null,
-  (get, set, { message, type = 'success' }: { message: string; type?: 'error' | 'success' | 'warning' }) => {
+  (_get, set, { message, type = 'success' }: { message: string; type?: 'error' | 'success' | 'warning' }) => {
     const id = Date.now().toString();
     const newNotification: Notification = { id, message, type };
     
@@ -19,7 +19,7 @@ export const addNotificationAtom = atom(
 
 export const removeNotificationAtom = atom(
   null,
-  (get, set, id: string) => {
+  (_get, set, id: string) => {
     set(notificationsAtom, (prev) => prev.filter((n) => n.id !== id));
   }
 );
