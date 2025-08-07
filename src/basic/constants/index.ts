@@ -72,5 +72,7 @@ export const NOTIFICATION_MESSAGE = {
     MIN_STOCK: "재고는 0보다 커야 합니다",
     MAX_STOCK: "재고는 9999개를 초과할 수 없습니다",
     INSUFFICIENT_STOCK: (stock: number) => `재고는 ${stock}개까지만 있습니다.`,
+    MAX_SALE_PERCENT: "할인율은 100%를 초과할 수 없습니다",
+    MAX_SALE_PRICE: "할인 금액은 100,000원을 초과할 수 없습니다",
   },
 } as const;
