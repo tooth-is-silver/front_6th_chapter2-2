@@ -1,8 +1,10 @@
 import { Dispatch, SetStateAction } from "react";
 import Input from "../common/Input";
-import { AddNotification, ProductForm } from "../../../types";
+import { ProductForm } from "../../../types";
 import { CloseIcon } from "../icons";
 import { NOTIFICATION_MESSAGE } from "../../constants";
+import { useSetAtom } from "jotai";
+import { addNotificationAtom } from "../../atoms/notification";
 
 interface ProductFormPanelProps {
   handleProductSubmit: (e: React.FormEvent) => void;
@@ -11,7 +13,6 @@ interface ProductFormPanelProps {
   productForm: ProductForm;
   setProductForm: Dispatch<SetStateAction<ProductForm>>;
   setShowProductForm: Dispatch<SetStateAction<boolean>>;
-  addNotification: AddNotification;
 }
 
 const ProductFormPanel = ({
@@ -21,8 +22,9 @@ const ProductFormPanel = ({
   productForm,
   setProductForm,
   setShowProductForm,
-  addNotification,
 }: ProductFormPanelProps) => {
+  const addNotification = useSetAtom(addNotificationAtom);
+
   return (
     <div className="p-6 border-t border-gray-200 bg-gray-50">
       <form onSubmit={handleProductSubmit} className="space-y-4">
@@ -72,7 +74,10 @@ const ProductFormPanel = ({
               if (value === "") {
                 setProductForm({ ...productForm, price: 0 });
               } else if (parseInt(value) < 0) {
-                addNotification(NOTIFICATION_MESSAGE.ERROR.MIN_PRICE, "error");
+                addNotification({
+                  message: NOTIFICATION_MESSAGE.ERROR.MIN_PRICE,
+                  type: "error",
+                });
                 setProductForm({ ...productForm, price: 0 });
               }
             }}
@@ -97,10 +102,16 @@ const ProductFormPanel = ({
               if (value === "") {
                 setProductForm({ ...productForm, stock: 0 });
               } else if (parseInt(value) < 0) {
-                addNotification(NOTIFICATION_MESSAGE.ERROR.MIN_STOCK, "error");
+                addNotification({
+                  message: NOTIFICATION_MESSAGE.ERROR.MIN_STOCK,
+                  type: "error",
+                });
                 setProductForm({ ...productForm, stock: 0 });
               } else if (parseInt(value) > 9999) {
-                addNotification(NOTIFICATION_MESSAGE.ERROR.MAX_STOCK, "error");
+                addNotification({
+                  message: NOTIFICATION_MESSAGE.ERROR.MAX_STOCK,
+                  type: "error",
+                });
                 setProductForm({ ...productForm, stock: 9999 });
               }
             }}

@@ -1,13 +1,10 @@
-import { Notification } from "../../../types";
+import { useAtomValue, useSetAtom } from "jotai";
 import { CloseIcon } from "../icons";
+import { notificationsAtom, removeNotificationAtom } from "../../atoms/notification";
 
-export const NotificationToast = ({
-  notifications,
-  removeNotification,
-}: {
-  notifications: Array<Notification>;
-  removeNotification: (id: string) => void;
-}) => {
+export const NotificationToast = () => {
+  const notifications = useAtomValue(notificationsAtom);
+  const removeNotification = useSetAtom(removeNotificationAtom);
   if (notifications.length <= 0) return null;
 
   return (

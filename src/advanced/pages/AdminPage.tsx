@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AddNotification, Coupon, Product, ProductWithUI } from "../../types";
+import { Coupon, Product, ProductWithUI } from "../../types";
 import ProductsTabContents from "../components/admin/ProductsTabContents";
 import CouponsTabContents from "../components/admin/CouponsTabContents";
 
@@ -11,7 +11,6 @@ interface AdminPageProps {
   updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
   handleAddCoupon: (newCoupon: Coupon) => void;
   handleDeleteCoupon: (couponCode: string) => void;
-  addNotification: AddNotification;
   getRemainingStock: (product: Product) => number;
 }
 
@@ -23,7 +22,6 @@ const AdminPage = ({
   updateProduct,
   handleAddCoupon,
   handleDeleteCoupon,
-  addNotification,
   getRemainingStock,
 }: AdminPageProps) => {
   const [activeTab, setActiveTab] = useState<"products" | "coupons">(
@@ -66,7 +64,6 @@ const AdminPage = ({
           products={products}
           deleteProduct={deleteProduct}
           getRemainingStock={getRemainingStock}
-          addNotification={addNotification}
           updateProduct={updateProduct}
           addProduct={addProduct}
         />
@@ -75,7 +72,6 @@ const AdminPage = ({
           coupons={coupons}
           handleDeleteCoupon={handleDeleteCoupon}
           handleAddCoupon={handleAddCoupon}
-          addNotification={addNotification}
         />
       )}
     </div>

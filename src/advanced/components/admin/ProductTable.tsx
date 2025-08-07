@@ -1,4 +1,6 @@
-import { AddNotification, Product, ProductWithUI } from "../../../types";
+import { useSetAtom } from "jotai";
+import { Product, ProductWithUI } from "../../../types";
+import { addNotificationAtom } from "../../atoms/notification";
 import { NOTIFICATION_MESSAGE } from "../../constants";
 import { formatPrice } from "../../utils/format";
 
@@ -7,7 +9,6 @@ interface ProductTableProps {
   startEditProduct: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
   getRemainingStock: (product: Product) => number;
-  addNotification: AddNotification;
 }
 
 const ProductTable = ({
@@ -15,8 +16,8 @@ const ProductTable = ({
   startEditProduct,
   deleteProduct,
   getRemainingStock,
-  addNotification,
 }: ProductTableProps) => {
+  const addNotification = useSetAtom(addNotificationAtom);
   return (
     <table className="w-full">
       <thead className="bg-gray-50 border-b border-gray-200">
@@ -78,10 +79,10 @@ const ProductTable = ({
               <button
                 onClick={() => {
                   deleteProduct(product.id);
-                  addNotification(
-                    NOTIFICATION_MESSAGE.PRODUCT.DELETE,
-                    "success"
-                  );
+                  addNotification({
+                    message: NOTIFICATION_MESSAGE.PRODUCT.DELETE,
+                    type: "success",
+                  });
                 }}
                 className="text-red-600 hover:text-red-900"
               >

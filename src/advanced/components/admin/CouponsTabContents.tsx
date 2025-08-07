@@ -1,23 +1,24 @@
 import { useState } from "react";
-import { AddNotification, Coupon } from "../../../types";
+import { Coupon } from "../../../types";
 import { AddIcon, DeleteIcon } from "../icons";
 import Input from "../common/Input";
 import { NOTIFICATION_MESSAGE } from "../../constants";
 import { couponHandler } from "../../handlers/coupon";
+import { addNotificationAtom } from "../../atoms/notification";
+import { useSetAtom } from "jotai";
 
 interface CouponsTabContentsProps {
   coupons: Array<Coupon>;
   handleDeleteCoupon: (couponCode: string) => void;
   handleAddCoupon: (newCoupon: Coupon) => void;
-  addNotification: AddNotification;
 }
 
 const CouponsTabContents = ({
   coupons,
   handleDeleteCoupon,
   handleAddCoupon,
-  addNotification,
 }: CouponsTabContentsProps) => {
+  const addNotification = useSetAtom(addNotificationAtom);
   const [showCouponForm, setShowCouponForm] = useState(false);
   const [couponForm, setCouponForm] = useState({
     name: "",
@@ -156,10 +157,10 @@ const CouponsTabContents = ({
                     const value = parseInt(e.target.value) || 0;
                     if (couponForm.discountType === "percentage") {
                       if (value > 100) {
-                        addNotification(
-                          NOTIFICATION_MESSAGE.ERROR.MAX_SALE_PERCENT,
-                          "error"
-                        );
+                        addNotification({
+                          message: NOTIFICATION_MESSAGE.ERROR.MAX_SALE_PERCENT,
+                          type: "error",
+                        });
                         setCouponForm({
                           ...couponForm,
                           discountValue: 100,
@@ -172,10 +173,10 @@ const CouponsTabContents = ({
                       }
                     } else {
                       if (value > 100000) {
-                        addNotification(
-                          NOTIFICATION_MESSAGE.ERROR.MAX_SALE_PRICE,
-                          "error"
-                        );
+                        addNotification({
+                          message: NOTIFICATION_MESSAGE.ERROR.MAX_SALE_PRICE,
+                          type: "error",
+                        });
                         setCouponForm({
                           ...couponForm,
                           discountValue: 100000,

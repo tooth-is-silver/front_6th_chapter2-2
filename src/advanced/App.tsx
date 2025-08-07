@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { CartItem, Coupon } from "../types";
 import { Header } from "./components/common/Header";
 import { NotificationToast } from "./components/common/NotificationToast";
@@ -9,12 +9,12 @@ import { useLocalStorageState } from "./utils/hooks/useLocalStorageState";
 import { useFilteredProducts } from "./utils/hooks/useFilteredProducts";
 import { useDebounce } from "./utils/hooks/useDebounce";
 import { useProducts } from "./hooks/useProducts";
-import { useNotification } from "./hooks/useNotification";
 import { useCoupons } from "./hooks/useCoupons";
 import { NOTIFICATION_MESSAGE } from "./constants";
 import { cartHandler } from "./handlers/cart";
 import { isAdminAtom } from "./atoms/admin";
 import { searchTermAtom } from "./atoms/search";
+import { addNotificationAtom } from "./atoms/notification";
 
 export default function App() {
   const searchTerm = useAtomValue(searchTermAtom);
@@ -31,8 +31,7 @@ export default function App() {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  const { notifications, addNotification, removeNotification } =
-    useNotification();
+  const addNotification = useSetAtom(addNotificationAtom);
   const { products, addProduct, deleteProduct, updateProduct } = useProducts();
 
   const filteredProducts = useFilteredProducts(products, debouncedSearchTerm);
@@ -57,34 +56,46 @@ export default function App() {
 
   const handleDeleteCoupon = (couponCode: string) => {
     deleteCoupon(couponCode);
-    addNotification(NOTIFICATION_MESSAGE.COUPON.DELETE, "success");
+    addNotification({
+      message: NOTIFICATION_MESSAGE.COUPON.DELETE,
+      type: "success",
+    });
   };
 
   const handleAddCoupon = (newCoupon: Coupon) => {
     const isSuccessAddCoupon = addCoupon(newCoupon, hasCoupon(newCoupon.code));
     if (isSuccessAddCoupon) {
-      addNotification(NOTIFICATION_MESSAGE.COUPON.ADD, "success");
+      addNotification({
+        message: NOTIFICATION_MESSAGE.COUPON.ADD,
+        type: "success",
+      });
     } else {
-      addNotification(NOTIFICATION_MESSAGE.ERROR.EXISTED_COUPON, "error");
+      addNotification({
+        message: NOTIFICATION_MESSAGE.ERROR.EXISTED_COUPON,
+        type: "error",
+      });
     }
   };
 
   const handleApplyCoupon = (coupon: Coupon, currentTotal: number) => {
     const canApplyCoupon = applyCoupon(coupon, currentTotal);
     if (canApplyCoupon) {
-      addNotification(NOTIFICATION_MESSAGE.COUPON.APPLIED, "success");
+      addNotification({
+        message: NOTIFICATION_MESSAGE.COUPON.APPLIED,
+        type: "success",
+      });
     } else {
-      addNotification(NOTIFICATION_MESSAGE.ERROR.MIN_COUPON, "error");
+      addNotification({
+        message: NOTIFICATION_MESSAGE.ERROR.MIN_COUPON,
+        type: "error",
+      });
     }
   };
   const totals = calculateCartTotal();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <NotificationToast
-        notifications={notifications}
-        removeNotification={removeNotification}
-      />
+      <NotificationToast />
       <Header cart={cart} />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
@@ -96,7 +107,6 @@ export default function App() {
             updateProduct={updateProduct}
             handleAddCoupon={handleAddCoupon}
             handleDeleteCoupon={handleDeleteCoupon}
-            addNotification={addNotification}
             getRemainingStock={getRemainingStock}
           />
         ) : (
@@ -109,7 +119,6 @@ export default function App() {
             setSelectedCoupon={setSelectedCoupon}
             filteredProducts={filteredProducts}
             debouncedSearchTerm={debouncedSearchTerm}
-            addNotification={addNotification}
             handleApplyCoupon={handleApplyCoupon}
             totals={totals}
             getRemainingStock={getRemainingStock}

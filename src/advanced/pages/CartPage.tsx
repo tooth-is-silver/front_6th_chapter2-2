@@ -1,16 +1,12 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
-import {
-  CartItem,
-  ProductWithUI,
-  Coupon,
-  AddNotification,
-  Product,
-} from "../../types";
+import { CartItem, ProductWithUI, Coupon, Product } from "../../types";
 import { CartIcon } from "../components/icons";
 import ProductList from "../components/cart/ProductList";
 import EmptyCart from "../components/cart/EmptyCart";
 import CartItemList from "../components/cart/CartItemList";
 import { NOTIFICATION_MESSAGE } from "../constants";
+import { useSetAtom } from "jotai";
+import { addNotificationAtom } from "../atoms/notification";
 
 interface CartPageProps {
   cart: Array<CartItem>;
@@ -21,7 +17,6 @@ interface CartPageProps {
   setSelectedCoupon: Dispatch<SetStateAction<Coupon | null>>;
   filteredProducts: Array<ProductWithUI>;
   debouncedSearchTerm: string;
-  addNotification: AddNotification;
   handleApplyCoupon: (coupon: Coupon, currentTotal: number) => void;
   getRemainingStock: (product: Product) => number;
   updateCartItemQuantity: (
@@ -49,7 +44,6 @@ const CartPage = ({
   setSelectedCoupon,
   filteredProducts,
   debouncedSearchTerm,
-  addNotification,
   handleApplyCoupon,
   getRemainingStock,
   updateCartItemQuantity,
@@ -57,11 +51,16 @@ const CartPage = ({
   totals,
   calculateItemTotal,
 }: CartPageProps) => {
+  const addNotification = useSetAtom(addNotificationAtom);
+
   const addToCart = useCallback(
     (product: ProductWithUI) => {
       const remainingStock = getRemainingStock(product);
       if (remainingStock <= 0) {
-        addNotification(NOTIFICATION_MESSAGE.ERROR.NONE_STOCK, "error");
+        addNotification({
+          message: NOTIFICATION_MESSAGE.ERROR.NONE_STOCK,
+          type: "error",
+        });
         return;
       }
 
@@ -74,10 +73,12 @@ const CartPage = ({
           const newQuantity = existingItem.quantity + 1;
 
           if (newQuantity > product.stock) {
-            addNotification(
-              NOTIFICATION_MESSAGE.ERROR.INSUFFICIENT_STOCK(product.stock),
-              "error"
-            );
+            addNotification({
+              message: NOTIFICATION_MESSAGE.ERROR.INSUFFICIENT_STOCK(
+                product.stock
+              ),
+              type: "error",
+            });
             return prevCart;
           }
           return updateCartItemQuantity(prevCart, product.id, newQuantity);
@@ -86,7 +87,10 @@ const CartPage = ({
         return [...prevCart, { product, quantity: 1 }];
       });
 
-      addNotification(NOTIFICATION_MESSAGE.CART.ADD, "success");
+      addNotification({
+        message: NOTIFICATION_MESSAGE.CART.ADD,
+        type: "success",
+      });
     },
     [cart, setCart, getRemainingStock, addNotification]
   );
@@ -102,10 +106,10 @@ const CartPage = ({
 
     const maxStock = product.stock;
     if (newQuantity > maxStock) {
-      addNotification(
-        NOTIFICATION_MESSAGE.ERROR.INSUFFICIENT_STOCK(maxStock),
-        "error"
-      );
+      addNotification({
+        message: NOTIFICATION_MESSAGE.ERROR.INSUFFICIENT_STOCK(maxStock),
+        type: "error",
+      });
       return;
     }
 
@@ -115,7 +119,8 @@ const CartPage = ({
 
   const completeOrder = useCallback(() => {
     const orderNumber = `ORD-${Date.now()}`;
-    addNotification(NOTIFICATION_MESSAGE.ORDER.ADD(orderNumber), "success");
+    const message = NOTIFICATION_MESSAGE.ORDER.ADD(orderNumber);
+    addNotification({ message, type: "success" });
     setCart([]);
     setSelectedCoupon(null);
   }, [addNotification]);

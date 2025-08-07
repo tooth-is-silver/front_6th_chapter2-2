@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AddNotification, Product, ProductWithUI } from "../../../types";
+import { Product, ProductWithUI } from "../../../types";
 import ProductFormPanel from "./ProductFormPanel";
 import ProductTable from "./ProductTable";
 import { productHandler } from "../../handlers/product";
@@ -8,7 +8,6 @@ interface ProductsTabContentsProps {
   products: Array<ProductWithUI>;
   deleteProduct: (productId: string) => void;
   getRemainingStock: (product: Product) => number;
-  addNotification: AddNotification;
   updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
   addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
 }
@@ -17,7 +16,6 @@ const ProductsTabContents = ({
   products,
   deleteProduct,
   getRemainingStock,
-  addNotification,
   updateProduct,
   addProduct,
 }: ProductsTabContentsProps) => {
@@ -71,7 +69,6 @@ const ProductsTabContents = ({
           startEditProduct={startEditProduct}
           deleteProduct={deleteProduct}
           getRemainingStock={getRemainingStock}
-          addNotification={addNotification}
         />
       </div>
       {showProductForm && (
@@ -82,7 +79,6 @@ const ProductsTabContents = ({
           setProductForm={setProductForm}
           setShowProductForm={setShowProductForm}
           handleProductSubmit={handleProductSubmit}
-          addNotification={addNotification}
         />
       )}
     </section>
