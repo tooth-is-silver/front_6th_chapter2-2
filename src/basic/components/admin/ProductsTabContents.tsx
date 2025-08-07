@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import {
   AddNotification,
-  CartItem,
+  Product,
   ProductForm,
   ProductWithUI,
 } from "../../../types";
@@ -9,7 +9,6 @@ import ProductFormPanel from "./ProductFormPanel";
 import ProductTable from "./ProductTable";
 
 interface ProductsTabContentsProps {
-  cart: Array<CartItem>;
   products: Array<ProductWithUI>;
   editingProduct: string | null;
   setEditingProduct: Dispatch<SetStateAction<string | null>>;
@@ -20,11 +19,11 @@ interface ProductsTabContentsProps {
   startEditProduct: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
   handleProductSubmit: (e: React.FormEvent) => void;
+  getRemainingStock: (product: Product) => number;
   addNotification: AddNotification;
 }
 
 const ProductsTabContents = ({
-  cart,
   products,
   editingProduct,
   setEditingProduct,
@@ -35,6 +34,7 @@ const ProductsTabContents = ({
   startEditProduct,
   deleteProduct,
   handleProductSubmit,
+  getRemainingStock,
   addNotification,
 }: ProductsTabContentsProps) => {
   return (
@@ -63,10 +63,11 @@ const ProductsTabContents = ({
 
       <div className="overflow-x-auto">
         <ProductTable
-          cart={cart}
           products={products}
           startEditProduct={startEditProduct}
           deleteProduct={deleteProduct}
+          getRemainingStock={getRemainingStock}
+          addNotification={addNotification}
         />
       </div>
       {showProductForm && (

@@ -59,6 +59,10 @@ export const NOTIFICATION_MESSAGE = {
   CART: {
     ADD: "장바구니에 담았습니다",
   },
+  ORDER: {
+    ADD: (orderNumber: string) =>
+      `주문이 완료되었습니다. 주문번호: ${orderNumber}`,
+  },
   COUPON: {
     ADD: "쿠폰이 추가되었습니다.",
     APPLIED: "쿠폰이 적용되었습니다.",

@@ -1,18 +1,21 @@
-import { CartItem, ProductWithUI } from "../../../types";
+import { Product, ProductWithUI } from "../../../types";
 import { formatPrice } from "../../utils/format";
-import { getRemainingStock } from "../../utils/stock";
 import { ImageIcon } from "../icons";
 
 interface ProductListProps {
   products: Array<ProductWithUI>;
-  cart: Array<CartItem>;
   addToCart: (product: ProductWithUI) => void;
+  getRemainingStock: (product: Product) => number;
 }
-const ProductList = ({ products, cart, addToCart }: ProductListProps) => {
+const ProductList = ({
+  products,
+  addToCart,
+  getRemainingStock,
+}: ProductListProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {products.map((product) => {
-        const remainingStock = getRemainingStock(cart, product);
+        const remainingStock = getRemainingStock(product);
 
         return (
           <div
@@ -52,7 +55,7 @@ const ProductList = ({ products, cart, addToCart }: ProductListProps) => {
                     products.find((p) => p.id === product.id),
                     false,
                     product.price,
-                    getRemainingStock(cart, product)
+                    getRemainingStock(product)
                   )}
                 </p>
                 {product.discounts.length > 0 && (

@@ -1,15 +1,16 @@
-import { Dispatch, SetStateAction } from "react";
-import { CartItem, ProductWithUI, Coupon, AddNotification } from "../../types";
+import { Dispatch, SetStateAction, useCallback } from "react";
+import {
+  CartItem,
+  ProductWithUI,
+  Coupon,
+  AddNotification,
+  Product,
+} from "../../types";
 import { CartIcon } from "../components/icons";
-import { cartHandler } from "../handlers/cart";
-import { useAddToCart } from "../hooks/cart/useAddToCart";
-import { useRemoveFromCart } from "../hooks/cart/useRemoveFormCart";
-import { useUpdateQuantity } from "../hooks/cart/useUpdateQuantity";
-import { useCompleteOrder } from "../hooks/order/useCompleteOrder";
-import { getRemainingStock } from "../utils/stock";
 import ProductList from "../components/cart/ProductList";
 import EmptyCart from "../components/cart/EmptyCart";
 import CartItemList from "../components/cart/CartItemList";
+import { NOTIFICATION_MESSAGE } from "../constants";
 
 interface CartPageProps {
   cart: Array<CartItem>;
@@ -22,6 +23,21 @@ interface CartPageProps {
   debouncedSearchTerm: string;
   addNotification: AddNotification;
   handleApplyCoupon: (coupon: Coupon, currentTotal: number) => void;
+  getRemainingStock: (product: Product) => number;
+  updateCartItemQuantity: (
+    cart: Array<CartItem>,
+    productId: string,
+    newQuantity: number
+  ) => CartItem[];
+  removeFromCart: (
+    productId: string,
+    setCart: React.Dispatch<React.SetStateAction<Array<CartItem>>>
+  ) => void;
+  totals: {
+    totalBeforeDiscount: number;
+    totalAfterDiscount: number;
+  };
+  calculateItemTotal: (item: CartItem) => number;
 }
 
 const CartPage = ({
@@ -35,35 +51,78 @@ const CartPage = ({
   debouncedSearchTerm,
   addNotification,
   handleApplyCoupon,
+  getRemainingStock,
+  updateCartItemQuantity,
+  removeFromCart,
+  totals,
+  calculateItemTotal,
 }: CartPageProps) => {
-  const { calculateItemTotal, calculateCartTotal } = cartHandler(
-    cart,
-    selectedCoupon
+  const addToCart = useCallback(
+    (product: ProductWithUI) => {
+      const remainingStock = getRemainingStock(product);
+      if (remainingStock <= 0) {
+        addNotification(NOTIFICATION_MESSAGE.ERROR.NONE_STOCK, "error");
+        return;
+      }
+
+      setCart((prevCart) => {
+        const existingItem = prevCart.find(
+          (item) => item.product.id === product.id
+        );
+
+        if (existingItem) {
+          const newQuantity = existingItem.quantity + 1;
+
+          if (newQuantity > product.stock) {
+            addNotification(
+              NOTIFICATION_MESSAGE.ERROR.INSUFFICIENT_STOCK(product.stock),
+              "error"
+            );
+            return prevCart;
+          }
+          return updateCartItemQuantity(prevCart, product.id, newQuantity);
+        }
+
+        return [...prevCart, { product, quantity: 1 }];
+      });
+
+      addNotification(NOTIFICATION_MESSAGE.CART.ADD, "success");
+    },
+    [cart, setCart, getRemainingStock, addNotification]
   );
 
-  const { addToCart } = useAddToCart(
-    getRemainingStock,
-    addNotification,
-    cart,
-    setCart
-  );
+  const updateQuantity = (productId: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeFromCart(productId, setCart);
+      return;
+    }
 
-  const { removeFromCart } = useRemoveFromCart(setCart);
-  const { updateQuantity } = useUpdateQuantity(
-    removeFromCart,
-    products,
-    addNotification,
-    setCart,
-    getRemainingStock
-  );
+    const product = products.find((p) => p.id === productId);
+    if (!product) return;
 
-  const { completeOrder } = useCompleteOrder(
-    setCart,
-    setSelectedCoupon,
-    addNotification
-  );
+    const maxStock = product.stock;
+    if (newQuantity > maxStock) {
+      addNotification(
+        NOTIFICATION_MESSAGE.ERROR.INSUFFICIENT_STOCK(maxStock),
+        "error"
+      );
+      return;
+    }
 
-  const totals = calculateCartTotal();
+    const updateCart = updateCartItemQuantity(cart, productId, newQuantity);
+    setCart(updateCart);
+  };
+
+  const completeOrder = useCallback(() => {
+    const orderNumber = `ORD-${Date.now()}`;
+    addNotification(NOTIFICATION_MESSAGE.ORDER.ADD(orderNumber), "success");
+    setCart([]);
+    setSelectedCoupon(null);
+  }, [addNotification]);
+
+  const handleRemoveFromCart = (productId: string) => {
+    removeFromCart(productId, setCart);
+  };
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
@@ -88,8 +147,8 @@ const CartPage = ({
             ) : (
               <ProductList
                 products={filteredProducts}
-                cart={cart}
                 addToCart={addToCart}
+                getRemainingStock={getRemainingStock}
               />
             )}
           </section>
@@ -108,7 +167,7 @@ const CartPage = ({
                 <CartItemList
                   cart={cart}
                   calculateItemTotal={calculateItemTotal}
-                  removeFromCart={removeFromCart}
+                  handleRemoveFromCart={handleRemoveFromCart}
                   updateQuantity={updateQuantity}
                 />
               )}
@@ -130,8 +189,7 @@ const CartPage = ({
                       className="w-full text-sm border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500"
                       value={selectedCoupon?.code || ""}
                       onChange={(e) => {
-                        const currentTotal =
-                          calculateCartTotal().totalAfterDiscount;
+                        const currentTotal = totals.totalAfterDiscount;
                         const coupon = coupons.find(
                           (c) => c.code === e.target.value
                         );

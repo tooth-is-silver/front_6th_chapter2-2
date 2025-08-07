@@ -11,6 +11,7 @@ import { useProducts } from "./hooks/useProducts";
 import { useNotification } from "./hooks/useNotification";
 import { useCoupons } from "./hooks/useCoupons";
 import { NOTIFICATION_MESSAGE } from "./constants";
+import { cartHandler } from "./handlers/cart";
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,6 +35,14 @@ export default function App() {
   const filteredProducts = useFilteredProducts(products, debouncedSearchTerm);
 
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const {
+    calculateItemTotal,
+    calculateCartTotal,
+    updateCartItemQuantity,
+    getRemainingStock,
+    removeFromCart,
+  } = cartHandler(cart, selectedCoupon);
 
   useEffect(() => {
     if (cart.length > 0) {
@@ -65,6 +74,7 @@ export default function App() {
       addNotification(NOTIFICATION_MESSAGE.ERROR.MIN_COUPON, "error");
     }
   };
+  const totals = calculateCartTotal();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -84,13 +94,13 @@ export default function App() {
           <AdminPage
             products={products}
             coupons={coupons}
-            cart={cart}
             addProduct={addProduct}
             deleteProduct={deleteProduct}
             updateProduct={updateProduct}
             handleAddCoupon={handleAddCoupon}
             handleDeleteCoupon={handleDeleteCoupon}
             addNotification={addNotification}
+            getRemainingStock={getRemainingStock}
           />
         ) : (
           <CartPage
@@ -104,6 +114,11 @@ export default function App() {
             debouncedSearchTerm={debouncedSearchTerm}
             addNotification={addNotification}
             handleApplyCoupon={handleApplyCoupon}
+            totals={totals}
+            getRemainingStock={getRemainingStock}
+            updateCartItemQuantity={updateCartItemQuantity}
+            removeFromCart={removeFromCart}
+            calculateItemTotal={calculateItemTotal}
           />
         )}
       </main>

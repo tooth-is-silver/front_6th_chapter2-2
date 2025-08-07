@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { couponHandler } from "../handlers/coupon";
-import { AddNotification, CartItem, Coupon, ProductWithUI } from "../../types";
+import { AddNotification, Coupon, Product, ProductWithUI } from "../../types";
 import { productHandler } from "../handlers/product";
 import ProductsTabContents from "../components/admin/ProductsTabContents";
 import CouponsTabContents from "../components/admin/CouponsTabContents";
@@ -8,24 +8,25 @@ import CouponsTabContents from "../components/admin/CouponsTabContents";
 interface AdminPageProps {
   coupons: Array<Coupon>;
   products: Array<ProductWithUI>;
-  cart: Array<CartItem>;
   addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
   deleteProduct: (productId: string) => void;
   updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
   handleAddCoupon: (newCoupon: Coupon) => void;
   handleDeleteCoupon: (couponCode: string) => void;
   addNotification: AddNotification;
+  getRemainingStock: (product: Product) => number;
 }
+
 const AdminPage = ({
   coupons,
   products,
-  cart,
   addProduct,
   deleteProduct,
   updateProduct,
   handleAddCoupon,
   handleDeleteCoupon,
   addNotification,
+  getRemainingStock,
 }: AdminPageProps) => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "coupons">(
@@ -97,7 +98,6 @@ const AdminPage = ({
 
       {activeTab === "products" ? (
         <ProductsTabContents
-          cart={cart}
           products={products}
           editingProduct={editingProduct}
           setEditingProduct={setEditingProduct}
@@ -108,6 +108,7 @@ const AdminPage = ({
           startEditProduct={startEditProduct}
           deleteProduct={deleteProduct}
           handleProductSubmit={handleProductSubmit}
+          getRemainingStock={getRemainingStock}
           addNotification={addNotification}
         />
       ) : (

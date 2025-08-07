@@ -1,24 +1,22 @@
-import { CartItem, ProductWithUI } from "../../../types";
+import { AddNotification, Product, ProductWithUI } from "../../../types";
 import { NOTIFICATION_MESSAGE } from "../../constants";
-import { useNotification } from "../../hooks/useNotification";
 import { formatPrice } from "../../utils/format";
-import { getRemainingStock } from "../../utils/stock";
 
 interface ProductTableProps {
-  cart: Array<CartItem>;
   products: Array<ProductWithUI>;
   startEditProduct: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
+  getRemainingStock: (product: Product) => number;
+  addNotification: AddNotification;
 }
 
 const ProductTable = ({
-  cart,
   products,
   startEditProduct,
   deleteProduct,
+  getRemainingStock,
+  addNotification,
 }: ProductTableProps) => {
-  const { addNotification } = useNotification();
-
   return (
     <table className="w-full">
       <thead className="bg-gray-50 border-b border-gray-200">
@@ -51,7 +49,7 @@ const ProductTable = ({
                 products.find((p) => p.id === product.id),
                 true,
                 product.price,
-                getRemainingStock(cart, product)
+                getRemainingStock(product)
               )}
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

@@ -4,14 +4,14 @@ import { CloseIcon } from "../icons";
 interface CartItemListProps {
   cart: Array<CartItem>;
   calculateItemTotal: (item: CartItem) => number;
-  removeFromCart: (productId: string) => void;
+  handleRemoveFromCart: (productId: string) => void;
   updateQuantity: (productId: string, newQuantity: number) => void;
 }
 
 const CartItemList = ({
   cart,
   calculateItemTotal,
-  removeFromCart,
+  handleRemoveFromCart,
   updateQuantity,
 }: CartItemListProps) => {
   return (
@@ -31,7 +31,7 @@ const CartItemList = ({
                 {item.product.name}
               </h4>
               <button
-                onClick={() => removeFromCart(item.product.id)}
+                onClick={() => handleRemoveFromCart(item.product.id)}
                 className="text-gray-400 hover:text-red-500 ml-2"
               >
                 <CloseIcon />
