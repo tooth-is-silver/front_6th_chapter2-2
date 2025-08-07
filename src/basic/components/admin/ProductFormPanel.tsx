@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 import Input from "../common/Input";
 import { ProductForm } from "../../../types";
 import { CloseIcon } from "../icons";
+import { NOTIFICATION_MESSAGE } from "../../constants";
 
 interface ProductFormPanelProps {
   handleProductSubmit: (e: React.FormEvent) => void;
@@ -74,7 +75,7 @@ const ProductFormPanel = ({
               if (value === "") {
                 setProductForm({ ...productForm, price: 0 });
               } else if (parseInt(value) < 0) {
-                addNotification("가격은 0보다 커야 합니다", "error");
+                addNotification(NOTIFICATION_MESSAGE.ERROR.MIN_PRICE, "error");
                 setProductForm({ ...productForm, price: 0 });
               }
             }}
@@ -99,10 +100,10 @@ const ProductFormPanel = ({
               if (value === "") {
                 setProductForm({ ...productForm, stock: 0 });
               } else if (parseInt(value) < 0) {
-                addNotification("재고는 0보다 커야 합니다", "error");
+                addNotification(NOTIFICATION_MESSAGE.ERROR.MIN_STOCK, "error");
                 setProductForm({ ...productForm, stock: 0 });
               } else if (parseInt(value) > 9999) {
-                addNotification("재고는 9999개를 초과할 수 없습니다", "error");
+                addNotification(NOTIFICATION_MESSAGE.ERROR.MAX_STOCK, "error");
                 setProductForm({ ...productForm, stock: 9999 });
               }
             }}

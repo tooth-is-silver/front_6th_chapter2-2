@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { CartItem, Product, ProductWithUI } from "../../../types";
+import { NOTIFICATION_MESSAGE } from "../../constants";
 
 export const useAddToCart = (
   getRemainingStock: (cart: Array<CartItem>, product: Product) => number,
@@ -14,7 +15,7 @@ export const useAddToCart = (
     (product: ProductWithUI) => {
       const remainingStock = getRemainingStock(cart, product);
       if (remainingStock <= 0) {
-        addNotification("재고가 부족합니다!", "error");
+        addNotification(NOTIFICATION_MESSAGE.ERROR.NONE_STOCK, "error");
         return;
       }
 
@@ -28,7 +29,7 @@ export const useAddToCart = (
 
           if (newQuantity > product.stock) {
             addNotification(
-              `재고는 ${product.stock}개까지만 있습니다.`,
+              NOTIFICATION_MESSAGE.ERROR.INSUFFICIENT_STOCK(product.stock),
               "error"
             );
             return prevCart;
@@ -44,7 +45,7 @@ export const useAddToCart = (
         return [...prevCart, { product, quantity: 1 }];
       });
 
-      addNotification("장바구니에 담았습니다", "success");
+      addNotification(NOTIFICATION_MESSAGE.CART.ADD, "success");
     },
     [cart, setCart, getRemainingStock, addNotification]
   );

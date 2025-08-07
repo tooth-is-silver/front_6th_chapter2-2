@@ -1,4 +1,6 @@
 import { CartItem, ProductWithUI } from "../../../types";
+import { NOTIFICATION_MESSAGE } from "../../constants";
+import { useNotification } from "../../hooks/useNotification";
 import { formatPrice } from "../../utils/format";
 import { getRemainingStock } from "../../utils/stock";
 
@@ -15,6 +17,8 @@ const ProductTable = ({
   startEditProduct,
   deleteProduct,
 }: ProductTableProps) => {
+  const { addNotification } = useNotification();
+
   return (
     <table className="w-full">
       <thead className="bg-gray-50 border-b border-gray-200">
@@ -74,7 +78,13 @@ const ProductTable = ({
                 수정
               </button>
               <button
-                onClick={() => deleteProduct(product.id)}
+                onClick={() => {
+                  deleteProduct(product.id);
+                  addNotification(
+                    NOTIFICATION_MESSAGE.PRODUCT.DELETE,
+                    "success"
+                  );
+                }}
                 className="text-red-600 hover:text-red-900"
               >
                 삭제

@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { Coupon } from "../../../types";
+import { NOTIFICATION_MESSAGE } from "../../constants";
 
 export const useAddCoupon = (
   coupons: Array<Coupon>,
@@ -13,11 +14,11 @@ export const useAddCoupon = (
     (newCoupon: Coupon) => {
       const existingCoupon = coupons.find((c) => c.code === newCoupon.code);
       if (existingCoupon) {
-        addNotification("이미 존재하는 쿠폰 코드입니다.", "error");
+        addNotification(NOTIFICATION_MESSAGE.ERROR.EXISTED_COUPON, "error");
         return;
       }
       setCoupons((prev) => [...prev, newCoupon]);
-      addNotification("쿠폰이 추가되었습니다.", "success");
+      addNotification(NOTIFICATION_MESSAGE.COUPON.ADD, "success");
     },
     [coupons, addNotification]
   );

@@ -1,5 +1,6 @@
 import { SetStateAction, useCallback } from "react";
 import { Coupon } from "../../../types";
+import { NOTIFICATION_MESSAGE } from "../../constants";
 
 export const useApplyCoupon = (
   calculateCartTotal: () => {
@@ -17,15 +18,12 @@ export const useApplyCoupon = (
       const currentTotal = calculateCartTotal().totalAfterDiscount;
 
       if (currentTotal < 10000 && coupon.discountType === "percentage") {
-        addNotification(
-          "percentage 쿠폰은 10,000원 이상 구매 시 사용 가능합니다.",
-          "error"
-        );
+        addNotification(NOTIFICATION_MESSAGE.ERROR.MIN_COUPON, "error");
         return;
       }
 
       setSelectedCoupon(coupon);
-      addNotification("쿠폰이 적용되었습니다.", "success");
+      addNotification(NOTIFICATION_MESSAGE.COUPON.APPLIED, "success");
     },
     [addNotification, calculateCartTotal]
   );

@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useCallback } from "react";
 import { Coupon } from "../../../types";
+import { NOTIFICATION_MESSAGE } from "../../constants";
 
 export const useDeleteCoupon = (
   selectedCoupon: Coupon | null,
@@ -16,7 +17,7 @@ export const useDeleteCoupon = (
       if (selectedCoupon?.code === couponCode) {
         setSelectedCoupon(null);
       }
-      addNotification("쿠폰이 삭제되었습니다.", "success");
+      addNotification(NOTIFICATION_MESSAGE.COUPON.DELETE, "success");
     },
     [selectedCoupon, addNotification]
   );
