@@ -7,9 +7,9 @@ import CartPage from "./pages/CartPage";
 import AdminPage from "./pages/AdminPage";
 import { initialCoupons, initialProducts } from "./constants";
 import { useAddNotification } from "./hooks/notification/useAddNotification";
-import { useLocalStorageState } from "./hooks/common/useLocalStorageState";
-import { useFilteredProducts } from "./hooks/common/useFilteredProducts";
-import { useDebounce } from "./hooks/common/useDebounce";
+import { useLocalStorageState } from "./utils/hooks/useLocalStorageState";
+import { useFilteredProducts } from "./utils/hooks/useFilteredProducts";
+import { useDebounce } from "./utils/hooks/useDebounce";
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
