@@ -5,16 +5,15 @@ import ProductList from "../components/cart/ProductList";
 import EmptyCart from "../components/cart/EmptyCart";
 import CartItemList from "../components/cart/CartItemList";
 import { NOTIFICATION_MESSAGE } from "../constants";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { addNotificationAtom } from "../atoms/notification";
+import { selectedCouponAtom } from "../atoms/coupon";
 
 interface CartPageProps {
   cart: Array<CartItem>;
   setCart: Dispatch<SetStateAction<Array<CartItem>>>;
   products: Array<ProductWithUI>;
   coupons: Array<Coupon>;
-  selectedCoupon: Coupon | null;
-  setSelectedCoupon: Dispatch<SetStateAction<Coupon | null>>;
   filteredProducts: Array<ProductWithUI>;
   debouncedSearchTerm: string;
   handleApplyCoupon: (coupon: Coupon, currentTotal: number) => void;
@@ -40,8 +39,6 @@ const CartPage = ({
   setCart,
   products,
   coupons,
-  selectedCoupon,
-  setSelectedCoupon,
   filteredProducts,
   debouncedSearchTerm,
   handleApplyCoupon,
@@ -52,6 +49,7 @@ const CartPage = ({
   calculateItemTotal,
 }: CartPageProps) => {
   const addNotification = useSetAtom(addNotificationAtom);
+  const [selectedCoupon, setSelectedCoupon] = useAtom(selectedCouponAtom);
 
   const addToCart = useCallback(
     (product: ProductWithUI) => {

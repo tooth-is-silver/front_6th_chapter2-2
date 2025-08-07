@@ -15,6 +15,7 @@ import { cartHandler } from "./handlers/cart";
 import { isAdminAtom } from "./atoms/admin";
 import { searchTermAtom } from "./atoms/search";
 import { addNotificationAtom } from "./atoms/notification";
+import { selectedCouponAtom } from "./atoms/coupon";
 
 export default function App() {
   const searchTerm = useAtomValue(searchTermAtom);
@@ -24,10 +25,10 @@ export default function App() {
     hasCoupon,
     addCoupon,
     deleteCoupon,
-    selectedCoupon,
-    setSelectedCoupon,
     applyCoupon,
   } = useCoupons();
+  
+  const selectedCoupon = useAtomValue(selectedCouponAtom);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
@@ -115,8 +116,6 @@ export default function App() {
             setCart={setCart}
             products={products}
             coupons={coupons}
-            selectedCoupon={selectedCoupon}
-            setSelectedCoupon={setSelectedCoupon}
             filteredProducts={filteredProducts}
             debouncedSearchTerm={debouncedSearchTerm}
             handleApplyCoupon={handleApplyCoupon}
