@@ -46,3 +46,8 @@ export interface Notification {
   message: string;
   type: "error" | "success" | "warning";
 }
+
+export type AddNotification = (
+  message: string,
+  type?: "error" | "success" | "warning"
+) => void;
