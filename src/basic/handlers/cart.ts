@@ -1,4 +1,5 @@
-import { CartItem, Coupon } from "../../types";
+import { Dispatch, SetStateAction } from "react";
+import { CartItem, Coupon, Product } from "../../types";
 
 export const cartHandler = (
   cart: Array<CartItem>,
@@ -62,5 +63,37 @@ export const cartHandler = (
     };
   };
 
-  return { calculateItemTotal, calculateCartTotal };
+  const updateCartItemQuantity = (
+    cart: Array<CartItem>,
+    productId: string,
+    newQuantity: number
+  ) => {
+    return cart.map((item) =>
+      item.product.id === productId ? { ...item, quantity: newQuantity } : item
+    );
+  };
+
+  const getRemainingStock = (product: Product): number => {
+    const cartItem = cart.find((item) => item.product.id === product.id);
+    const remaining = product.stock - (cartItem?.quantity || 0);
+
+    return remaining;
+  };
+
+  const removeFromCart = (
+    productId: string,
+    setCart: Dispatch<SetStateAction<Array<CartItem>>>
+  ) => {
+    setCart((prevCart) =>
+      prevCart.filter((item) => item.product.id !== productId)
+    );
+  };
+
+  return {
+    calculateItemTotal,
+    calculateCartTotal,
+    updateCartItemQuantity,
+    getRemainingStock,
+    removeFromCart,
+  };
 };
