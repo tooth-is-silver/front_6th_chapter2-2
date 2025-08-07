@@ -5,10 +5,6 @@ import CouponsTabContents from "../components/admin/CouponsTabContents";
 
 interface AdminPageProps {
   coupons: Array<Coupon>;
-  products: Array<ProductWithUI>;
-  addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
-  deleteProduct: (productId: string) => void;
-  updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
   handleAddCoupon: (newCoupon: Coupon) => void;
   handleDeleteCoupon: (couponCode: string) => void;
   getRemainingStock: (product: Product) => number;
@@ -16,10 +12,6 @@ interface AdminPageProps {
 
 const AdminPage = ({
   coupons,
-  products,
-  addProduct,
-  deleteProduct,
-  updateProduct,
   handleAddCoupon,
   handleDeleteCoupon,
   getRemainingStock,
@@ -60,13 +52,7 @@ const AdminPage = ({
       </div>
 
       {activeTab === "products" ? (
-        <ProductsTabContents
-          products={products}
-          deleteProduct={deleteProduct}
-          getRemainingStock={getRemainingStock}
-          updateProduct={updateProduct}
-          addProduct={addProduct}
-        />
+        <ProductsTabContents getRemainingStock={getRemainingStock} />
       ) : (
         <CouponsTabContents
           coupons={coupons}

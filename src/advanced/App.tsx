@@ -6,7 +6,6 @@ import CartPage from "./pages/CartPage";
 import AdminPage from "./pages/AdminPage";
 import { useFilteredProducts } from "./utils/hooks/useFilteredProducts";
 import { useDebounce } from "./utils/hooks/useDebounce";
-import { useProducts } from "./hooks/useProducts";
 import { useCoupons } from "./hooks/useCoupons";
 import { NOTIFICATION_MESSAGE } from "./constants";
 import { cartHandler } from "./handlers/cart";
@@ -15,6 +14,7 @@ import { searchTermAtom } from "./atoms/search";
 import { addNotificationAtom } from "./atoms/notification";
 import { selectedCouponAtom } from "./atoms/coupon";
 import { cartWithLocalStorageAtom } from "./atoms/cart";
+import { productsWithLocalStorageAtom } from "./atoms/products";
 
 export default function App() {
   const searchTerm = useAtomValue(searchTermAtom);
@@ -27,7 +27,7 @@ export default function App() {
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const addNotification = useSetAtom(addNotificationAtom);
-  const { products, addProduct, deleteProduct, updateProduct } = useProducts();
+  const products = useAtomValue(productsWithLocalStorageAtom);
 
   const filteredProducts = useFilteredProducts(products, debouncedSearchTerm);
 
@@ -86,18 +86,13 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
           <AdminPage
-            products={products}
             coupons={coupons}
-            addProduct={addProduct}
-            deleteProduct={deleteProduct}
-            updateProduct={updateProduct}
             handleAddCoupon={handleAddCoupon}
             handleDeleteCoupon={handleDeleteCoupon}
             getRemainingStock={getRemainingStock}
           />
         ) : (
           <CartPage
-            products={products}
             coupons={coupons}
             filteredProducts={filteredProducts}
             debouncedSearchTerm={debouncedSearchTerm}

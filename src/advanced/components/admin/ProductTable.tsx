@@ -1,23 +1,30 @@
-import { useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { Product, ProductWithUI } from "../../../types";
 import { addNotificationAtom } from "../../atoms/notification";
 import { NOTIFICATION_MESSAGE } from "../../constants";
 import { formatPrice } from "../../utils/format";
+import {
+  deleteProductAtom,
+  productsWithLocalStorageAtom,
+} from "../../atoms/products";
 
 interface ProductTableProps {
-  products: Array<ProductWithUI>;
   startEditProduct: (product: ProductWithUI) => void;
-  deleteProduct: (productId: string) => void;
   getRemainingStock: (product: Product) => number;
 }
 
 const ProductTable = ({
-  products,
   startEditProduct,
-  deleteProduct,
   getRemainingStock,
 }: ProductTableProps) => {
+  const products = useAtomValue(productsWithLocalStorageAtom);
+  const deleteProductAction = useSetAtom(deleteProductAtom);
   const addNotification = useSetAtom(addNotificationAtom);
+
+  const deleteProduct = (productId: string) => {
+    deleteProductAction(productId);
+  };
+
   return (
     <table className="w-full">
       <thead className="bg-gray-50 border-b border-gray-200">

@@ -3,21 +3,15 @@ import { Product, ProductWithUI } from "../../../types";
 import ProductFormPanel from "./ProductFormPanel";
 import ProductTable from "./ProductTable";
 import { productHandler } from "../../handlers/product";
+import { useSetAtom } from "jotai";
+import { addProductAtom, updateProductAtom } from "../../atoms/products";
 
 interface ProductsTabContentsProps {
-  products: Array<ProductWithUI>;
-  deleteProduct: (productId: string) => void;
   getRemainingStock: (product: Product) => number;
-  updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
-  addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
 }
 
 const ProductsTabContents = ({
-  products,
-  deleteProduct,
   getRemainingStock,
-  updateProduct,
-  addProduct,
 }: ProductsTabContentsProps) => {
   const [productForm, setProductForm] = useState({
     name: "",
@@ -28,6 +22,19 @@ const ProductsTabContents = ({
   });
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [showProductForm, setShowProductForm] = useState(false);
+  const updateProductAction = useSetAtom(updateProductAtom);
+  const addProductAction = useSetAtom(addProductAtom);
+
+  const addProduct = (newProduct: Omit<ProductWithUI, "id">) => {
+    addProductAction(newProduct);
+  };
+
+  const updateProduct = (
+    productId: string,
+    updates: Partial<ProductWithUI>
+  ) => {
+    updateProductAction({ productId, updates });
+  };
 
   const { handleProductSubmit, startEditProduct } = productHandler(
     editingProduct,
@@ -65,9 +72,7 @@ const ProductsTabContents = ({
 
       <div className="overflow-x-auto">
         <ProductTable
-          products={products}
           startEditProduct={startEditProduct}
-          deleteProduct={deleteProduct}
           getRemainingStock={getRemainingStock}
         />
       </div>
