@@ -1,42 +1,46 @@
-import { Dispatch, SetStateAction } from "react";
-import {
-  AddNotification,
-  Product,
-  ProductForm,
-  ProductWithUI,
-} from "../../../types";
+import { useState } from "react";
+import { AddNotification, Product, ProductWithUI } from "../../../types";
 import ProductFormPanel from "./ProductFormPanel";
 import ProductTable from "./ProductTable";
+import { productHandler } from "../../handlers/product";
 
 interface ProductsTabContentsProps {
   products: Array<ProductWithUI>;
-  editingProduct: string | null;
-  setEditingProduct: Dispatch<SetStateAction<string | null>>;
-  productForm: ProductForm;
-  setProductForm: Dispatch<SetStateAction<ProductForm>>;
-  showProductForm: boolean;
-  setShowProductForm: Dispatch<SetStateAction<boolean>>;
-  startEditProduct: (product: ProductWithUI) => void;
   deleteProduct: (productId: string) => void;
-  handleProductSubmit: (e: React.FormEvent) => void;
   getRemainingStock: (product: Product) => number;
   addNotification: AddNotification;
+  updateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
+  addProduct: (newProduct: Omit<ProductWithUI, "id">) => void;
 }
 
 const ProductsTabContents = ({
   products,
-  editingProduct,
-  setEditingProduct,
-  productForm,
-  setProductForm,
-  showProductForm,
-  setShowProductForm,
-  startEditProduct,
   deleteProduct,
-  handleProductSubmit,
   getRemainingStock,
   addNotification,
+  updateProduct,
+  addProduct,
 }: ProductsTabContentsProps) => {
+  const [productForm, setProductForm] = useState({
+    name: "",
+    price: 0,
+    stock: 0,
+    description: "",
+    discounts: [] as Array<{ quantity: number; rate: number }>,
+  });
+  const [editingProduct, setEditingProduct] = useState<string | null>(null);
+  const [showProductForm, setShowProductForm] = useState(false);
+
+  const { handleProductSubmit, startEditProduct } = productHandler(
+    editingProduct,
+    setEditingProduct,
+    updateProduct,
+    addProduct,
+    productForm,
+    setProductForm,
+    setShowProductForm
+  );
+
   return (
     <section className="bg-white rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200">

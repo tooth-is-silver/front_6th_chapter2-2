@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { couponHandler } from "../handlers/coupon";
 import { AddNotification, Coupon, Product, ProductWithUI } from "../../types";
-import { productHandler } from "../handlers/product";
 import ProductsTabContents from "../components/admin/ProductsTabContents";
 import CouponsTabContents from "../components/admin/CouponsTabContents";
 
@@ -28,42 +26,17 @@ const AdminPage = ({
   addNotification,
   getRemainingStock,
 }: AdminPageProps) => {
-  const [showProductForm, setShowProductForm] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "coupons">(
     "products"
   );
-  const [editingProduct, setEditingProduct] = useState<string | null>(null);
-  const [productForm, setProductForm] = useState({
-    name: "",
-    price: 0,
-    stock: 0,
-    description: "",
-    discounts: [] as Array<{ quantity: number; rate: number }>,
-  });
-  const [showCouponForm, setShowCouponForm] = useState(false);
-  const [couponForm, setCouponForm] = useState({
-    name: "",
-    code: "",
-    discountType: "amount" as "amount" | "percentage",
-    discountValue: 0,
-  });
 
-  const { handleProductSubmit, startEditProduct } = productHandler(
-    editingProduct,
-    setEditingProduct,
-    updateProduct,
-    addProduct,
-    productForm,
-    setProductForm,
-    setShowProductForm
-  );
-
-  const { handleCouponSubmit } = couponHandler(
-    handleAddCoupon,
-    couponForm,
-    setCouponForm,
-    setShowCouponForm
-  );
+  const handleClassName = (isActive: boolean) => {
+    return `py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+      isActive
+        ? "border-gray-900 text-gray-900"
+        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+    }`;
+  };
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -75,21 +48,13 @@ const AdminPage = ({
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab("products")}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "products"
-                ? "border-gray-900 text-gray-900"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
+            className={handleClassName(activeTab === "products")}
           >
             상품 관리
           </button>
           <button
             onClick={() => setActiveTab("coupons")}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === "coupons"
-                ? "border-gray-900 text-gray-900"
-                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-            }`}
+            className={handleClassName(activeTab === "coupons")}
           >
             쿠폰 관리
           </button>
@@ -99,27 +64,17 @@ const AdminPage = ({
       {activeTab === "products" ? (
         <ProductsTabContents
           products={products}
-          editingProduct={editingProduct}
-          setEditingProduct={setEditingProduct}
-          productForm={productForm}
-          setProductForm={setProductForm}
-          showProductForm={showProductForm}
-          setShowProductForm={setShowProductForm}
-          startEditProduct={startEditProduct}
           deleteProduct={deleteProduct}
-          handleProductSubmit={handleProductSubmit}
           getRemainingStock={getRemainingStock}
           addNotification={addNotification}
+          updateProduct={updateProduct}
+          addProduct={addProduct}
         />
       ) : (
         <CouponsTabContents
           coupons={coupons}
           handleDeleteCoupon={handleDeleteCoupon}
-          couponForm={couponForm}
-          setCouponForm={setCouponForm}
-          showCouponForm={showCouponForm}
-          setShowCouponForm={setShowCouponForm}
-          handleCouponSubmit={handleCouponSubmit}
+          handleAddCoupon={handleAddCoupon}
           addNotification={addNotification}
         />
       )}

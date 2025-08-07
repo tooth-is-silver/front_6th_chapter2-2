@@ -1,30 +1,38 @@
-import { Dispatch, SetStateAction } from "react";
-import { AddNotification, Coupon, CouponForm } from "../../../types";
+import { useState } from "react";
+import { AddNotification, Coupon } from "../../../types";
 import { AddIcon, DeleteIcon } from "../icons";
 import Input from "../common/Input";
 import { NOTIFICATION_MESSAGE } from "../../constants";
+import { couponHandler } from "../../handlers/coupon";
 
 interface CouponsTabContentsProps {
   coupons: Array<Coupon>;
-  couponForm: CouponForm;
-  setCouponForm: Dispatch<SetStateAction<CouponForm>>;
-  showCouponForm: boolean;
-  setShowCouponForm: Dispatch<SetStateAction<boolean>>;
-  handleCouponSubmit: (e: React.FormEvent) => void;
   handleDeleteCoupon: (couponCode: string) => void;
+  handleAddCoupon: (newCoupon: Coupon) => void;
   addNotification: AddNotification;
 }
 
 const CouponsTabContents = ({
   coupons,
-  couponForm,
-  setCouponForm,
-  showCouponForm,
-  setShowCouponForm,
-  handleCouponSubmit,
   handleDeleteCoupon,
+  handleAddCoupon,
   addNotification,
 }: CouponsTabContentsProps) => {
+  const [showCouponForm, setShowCouponForm] = useState(false);
+  const [couponForm, setCouponForm] = useState({
+    name: "",
+    code: "",
+    discountType: "amount" as "amount" | "percentage",
+    discountValue: 0,
+  });
+
+  const { handleCouponSubmit } = couponHandler(
+    handleAddCoupon,
+    couponForm,
+    setCouponForm,
+    setShowCouponForm
+  );
+
   return (
     <section className="bg-white rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200">
