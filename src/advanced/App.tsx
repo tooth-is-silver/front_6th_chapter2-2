@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAtom } from "jotai";
 import { CartItem, Coupon } from "../types";
 import { Header } from "./components/common/Header";
 import { NotificationToast } from "./components/common/NotificationToast";
@@ -12,6 +13,7 @@ import { useNotification } from "./hooks/useNotification";
 import { useCoupons } from "./hooks/useCoupons";
 import { NOTIFICATION_MESSAGE } from "./constants";
 import { cartHandler } from "./handlers/cart";
+import { isAdminAtom } from "./atoms/admin";
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,7 +36,7 @@ export default function App() {
 
   const filteredProducts = useFilteredProducts(products, debouncedSearchTerm);
 
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin] = useAtom(isAdminAtom);
 
   const {
     calculateItemTotal,
@@ -83,8 +85,6 @@ export default function App() {
         removeNotification={removeNotification}
       />
       <Header
-        isAdmin={isAdmin}
-        setIsAdmin={setIsAdmin}
         cart={cart}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}

@@ -1,23 +1,21 @@
-import { SetStateAction } from "jotai";
-import { Dispatch, useEffect, useState } from "react";
+import { useAtom } from "jotai";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { CartItem } from "../../../types";
 import { GnbCartIcon } from "../icons";
+import { isAdminAtom } from "../../atoms/admin";
 
 type HeaderProps = {
-  isAdmin: boolean;
-  setIsAdmin: Dispatch<SetStateAction<boolean>>;
   cart: Array<CartItem>;
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
 };
 
 export const Header = ({
-  isAdmin,
-  setIsAdmin,
   cart,
   searchTerm,
   setSearchTerm,
 }: HeaderProps) => {
+  const [isAdmin, setIsAdmin] = useAtom(isAdminAtom);
   const [totalItemCount, setTotalItemCount] = useState(0);
 
   useEffect(() => {
